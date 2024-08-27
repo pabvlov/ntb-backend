@@ -1,0 +1,154 @@
+
+GET http://localhost:3000/
+
+###
+
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+Accept-Language: es
+
+{
+    "mail": "pablojavierprietocepeda@gmail.com",
+    "password": "1q2w3e4r"
+}
+
+###
+
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+Accept-Language: es
+
+{
+    "mail": "cpjc91@gmail.com",
+    "nickname": "CEO",
+    "name": "Carlos",
+    "lastname": "Jara",
+    "gender": "M",
+    "contact": "962367524",
+    "birthdate": "1991-07-01",
+    "password": "1q2w3e4r"
+}
+
+###
+
+POST http://localhost:3000/auth/renew
+Content-Type: application/json
+Accept-Language: es
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwibWFpbCI6InBhYmxvamF2aWVycHJpZXRvY2VwZWRhQGdtYWlsLmNvbSIsIm5hbWUiOiJQYWJsbyIsImxhc3RuYW1lIjoiUHJpZXRvIiwiZ2VuZGVyIjoiTSIsInBhc3N3b3JkIjoidUFGcjBxVmUzU25raktlTjE0U25qbXBwU3A3b1pRMVZDTXNNTkhJQWhROD0iLCJzYWx0IjoiIEY5Q2NtcSIsImlhdCI6MTcxNDY2NTgyOSwiZXhwIjoxNzE0NzUyMjI5fQ.3YjNlWavbSgVK-N_JzJDV5K_2fd9o6uvscjL6-SrnXw"
+}
+
+###
+
+POST http://localhost:3000/auth/regenerate
+Content-Type: application/json
+Accept-Language: es
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwibWFpbCI6InBhYmxvamF2aWVycHJpZXRvY2VwZWRhQGdtYWlsLmNvbSIsIm5hbWUiOiJQYWJsbyIsImxhc3RuYW1lIjoiUHJpZXRvIiwiZ2VuZGVyIjoiTSIsImNvbnRhY3QiOjk3ODU2OTk3MiwicGFzc3dvcmQiOiJ1QUZyMHFWZTNTbmtqS2VOMTRTbmptcHBTcDdvWlExVkNNc01OSElBaFE4PSIsInNhbHQiOiIgRjlDY21xIiwiaWF0IjoxNzE0NjkxOTk2LCJleHAiOjE3MTQ3NzgzOTZ9.M3zZ1BYPixEhjQpoD8QanWod47eokurm3dy1ht1NV-I"
+}
+
+###
+
+GET http://localhost:3000/user/find?mail=pablojavierprietocepeda@gmail.com
+Content-Type: multipart/form-data
+Accept-Language: es
+
+###
+
+GET http://localhost:3000/user/communities?id=4
+
+###
+GET http://localhost:3000/community/info?id=1
+
+###     CREAR PLANIFICACIÓN DE CLASE
+
+POST http://localhost:3000/class/planning
+
+###     CREAR CLASE
+
+POST http://localhost:3000/class/create
+Content-Type: application/json
+Accept-Language: es
+
+{
+    "id_group": 1,
+    "id_user_teacher": 8,
+    "id_planification": null,
+    "start_date": "2024-08-26 08:00:00",
+    "end_date": "2024-08-26 10:00:00",
+    "id_establishment": 1,
+    "teacher_assistence": false
+}
+
+### Mostrar clases de un establecimiento
+
+GET http://localhost:3000/class/show?id_establishment=1
+
+### Mostrar clases entre fechas
+
+GET http://localhost:3000/class/showBetweenDates?id_establishment=1&start_date=2024-08-25&end_date=2024-08-27
+
+### Mostrar clases por profesor
+
+GET http://localhost:3000/class/showByTeacher?id_user_teacher=8
+
+### Mostrar clases por grupo
+
+GET http://localhost:3000/class/showByGroup?id_group=1
+
+
+###     CREAR GRUPO
+POST http://localhost:3000/group/create
+Content-Type: application/json
+Accept-Language: es
+
+{
+    "name": "Grupo 1",
+    "id_establishment": 1,
+    "id_difficulty_category": 1
+}
+
+###    INSERTAR ATLETA EN GRUPO
+
+POST http://localhost:3000/group/insertAthlete
+Content-Type: application/json
+Accept-Language: es
+
+{
+    "id_group": 2,
+    "id_athlete": 4
+}
+
+### Obtener grupos que tengan atletas
+
+GET http://localhost:3000/group/withAthletes?id_establishment=1
+
+
+### Obtener todos los grupos en un establecimiento
+
+GET http://localhost:3000/groups?id_establishment=1
+
+### Crear Elemento
+
+POST http://localhost:3000/element/create
+Content-Type: application/json
+Accept-Language: es
+
+{
+    "name": "Elemento 1",
+    "video": "https://www.youtube.com/watch?v=3JZ_D3ELwOQ",
+    "image": "https://www.google.com",
+    "id_element_connection": null,
+    "difficulty": "B",
+    "id_apparatus": 2
+}
+
+### Eliminar Elemento
+
+DELETE http://localhost:3000/element/delete?id=6
+
+### Mostrar Elementos
+
+GET http://localhost:3000/elements?id_apparatus=7
