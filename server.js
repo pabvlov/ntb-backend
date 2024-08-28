@@ -12,6 +12,8 @@ const communityRouter = require("./app/routes/community.routes");
 const classRouter = require("./app/routes/class.routes");
 const groupRouter = require("./app/routes/group.routes");
 const elementRouter = require("./app/routes/element.routes");
+const warmupRouter = require("./app/routes/warm-up.routes");
+const physicalpreparationRouter = require("./app/routes/physical-preparation.routes");
 
 app.use(express.json());
 app.use(express.static('app/images'));
@@ -47,9 +49,13 @@ app.get("/community/info", communityRouter);
 /* ALL CLASSES */
 
 app.post("/class/create", classRouter);
+app.post("/class/insertWarmUp", classRouter)
+app.post("/class/insertPhysicalPreparation", classRouter)
 app.put("/class/changeDate", classRouter);
 app.put("/class/changeTeacher", classRouter);
 app.delete("/class/delete", classRouter);
+app.delete("/class/warmup", classRouter);
+app.delete("/class/physicalpreparation", classRouter);
 app.get("/class/show", classRouter);
 app.get("/class/showBetweenDates", classRouter);
 app.get("/class/showByTeacher", classRouter);
@@ -67,6 +73,20 @@ app.get("/group/withAthletes", groupRouter);
 app.get("/elements", elementRouter);
 app.post("/element/create", elementRouter);
 app.delete("/element/delete", elementRouter);
+
+/* WARM UP */
+
+app.post("/warmup/create", warmupRouter);
+app.delete("/warmup/delete", warmupRouter);
+app.get("/warmup/show", warmupRouter);
+app.get("/warmup/showByClass", warmupRouter);
+
+/* PHYSICAL PREPARATION */
+
+app.post("/physicalpreparation/create", physicalpreparationRouter);
+app.delete("/physicalpreparation/delete", physicalpreparationRouter);
+app.get("/physicalpreparation/show", physicalpreparationRouter);
+app.get("/physicalpreparation/showByClass", physicalpreparationRouter);
 
 // error handler
 app.use((err, req, res, next) => {

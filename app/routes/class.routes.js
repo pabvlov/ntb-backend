@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const classService = require('../services/class.service.js');
+const warmupService = require('../services/warm-up.service.js')
+const physicalpreparationService = require('../services/physical-preparation.service.js')
 
 router.post('/class/create', async function (req, res, next) {
   try {
@@ -90,5 +92,64 @@ router.put('/class/changeTeacher', async function (req, res, next) {
     next(err);
   }
 });
+
+router.post('/class/insertWarmUp', async function (req, res, next) {
+  try {
+    const { id_class, id_warmup, quantity, id_quantity_type } = req.body;
+    if (id_class == null || id_warmup == null) return res.status(400).json({ affectedRows: 0, message: 'Class or WarmUp ID´s can´t be null' });
+    const exist = await classService.checkClassExists(id_class);    
+    if (exist.length == 0) return res.status(404).json({ affectedRows: 0, message: 'The class you provided doesn´t exists' })
+    
+    const classWarmUpInsert = await warmupService.attachWarmUpToClass(id_class, id_warmup, quantity, id_quantity_type);
+    return res.status(200).json({ affectedRows: classWarmUpInsert.affectedRows });
+  } catch (err) {
+    console.error(`Error while posting that warm up:`, err.message);
+    next(err);
+  }
+});
+
+router.delete('/class/deleteWarmUp', async function (req, res, next) {
+  try {
+    const { id_class, id_warmup, quantity, id_quantity_type } = req.body;
+    if (id_class == null || id_warmup == null) return res.status(400).json({ affectedRows: 0, message: 'Class or WarmUp ID´s can´t be null' });
+    const exist = await classService.checkClassExists(id_class);
+    if (exist.length === 0) return res.status(204).json({ affectedRows: 0, message: 'The class you provided doesn´t exists' });
+
+    const classDeletWarmUpAttachment = await warmupService.deleteWarmUpAttachment(id_class, id_warmup);
+    return res.status(200).json({ affectedRows: classDeletWarmUpAttachment.affectedRows })
+  } catch (err) {
+      console.error(`Error while deleting that warmup`)
+  }
+})
+
+router.post('/class/insertPhysicalPreparation', async function (req, res, next) {
+  try {
+    const { id_class, id_warmup, quantity, id_quantity_type } = req.body;
+    if (id_class == null || id_warmup == null) return res.status(400).json({ affectedRows: 0, message: 'Class or PhysicalPreparation ID´s can´t be null' });
+    const exist = await classService.checkClassExists(id_class);    
+    if (exist.length == 0) return res.status(404).json({ affectedRows: 0, message: 'The class you provided doesn´t exists' })
+    
+    const classPhysicalPreparationInsert = await physicalpreparationService.attachPhysicalPreparationToClass(id_class, id_warmup, quantity, id_quantity_type);
+    return res.status(200).json({ affectedRows: classPhysicalPreparationInsert.affectedRows });
+  } catch (err) {
+    console.error(`Error while posting that warm up:`, err.message);
+    next(err);
+  }
+});
+
+router.delete('/class/deletePhysicalPreparation', async function (req, res, next) {
+  try {
+    const { id_class, id_warmup, quantity, id_quantity_type } = req.body;
+    if (id_class == null || id_warmup == null) return res.status(400).json({ affectedRows: 0, message: 'Class or PhysicalPreparation ID´s can´t be null' });
+    const exist = await classService.checkClassExists(id_class);
+    if (exist.length === 0) return res.status(204).json({ affectedRows: 0, message: 'The class you provided doesn´t exists' });
+
+    const classDeletPhysicalPreparationAttachment = await physicalpreparationService.deletePhysicalPreparationAttachment(id_class, id_warmup);
+    return res.status(200).json({ affectedRows: classDeletPhysicalPreparationAttachment.affectedRows })
+  } catch (err) {
+      console.error(`Error while deleting that warmup`)
+  }
+})
+
 
 module.exports = router;

@@ -49,6 +49,11 @@ async function changeClassTeacher(id_class, id_user_teacher) {
 	return classes;
 }
 
+async function checkClassExists(id_class) {
+	const classes = await db.query(`SELECT id FROM class where id = ${ id_class }`)
+	return classes;
+}
+
 
 module.exports = {
     createClass,
@@ -58,5 +63,6 @@ module.exports = {
 	changeClassTeacher,
 	getClassesBetweenDates,
 	getClassesByTeacher,
-	getClassesByGroup
+	getClassesByGroup,
+	checkClassExists
 }
