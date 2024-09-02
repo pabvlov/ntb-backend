@@ -41,6 +41,7 @@ app.post("/auth/regenerate", authRouter);
 
 app.get("/user/find", userRouter);
 app.get("/user/communities", userRouter);
+app.get("/user/athletes", userRouter);
 
 /* COMMUNITY */
 
@@ -50,7 +51,9 @@ app.get("/community/info", communityRouter);
 
 app.post("/class/create", classRouter);
 app.post("/class/insertWarmUp", classRouter)
-app.post("/class/insertPhysicalPreparation", classRouter)
+app.post("/class/insertPhysicalPreparation", classRouter);
+app.post("/class/planning/create", classRouter);
+app.post("/class/planning/achievement", classRouter);
 app.put("/class/changeDate", classRouter);
 app.put("/class/changeTeacher", classRouter);
 app.delete("/class/delete", classRouter);
@@ -60,6 +63,7 @@ app.get("/class/show", classRouter);
 app.get("/class/showBetweenDates", classRouter);
 app.get("/class/showByTeacher", classRouter);
 app.get("/class/showByGroup", classRouter);
+app.get("/class/planning/achievements", classRouter);
 
 /* GROUP */
 

@@ -4,8 +4,11 @@ const warmupServices = require('../services/warm-up.service.js');
 
 router.post('/warmup/create', async function (req, res, next) {
   try {
-    const { name } = req.body;
-    const exists = await warmupServices.checkWarmUpExists(name);
+    const { name, single_name } = req.body;
+    if (!name || !single_name) {
+      return res.status(400).json({ message: 'Missing parameters: You have to provide a name and a single name' });
+    }
+    const exists = await warmupServices.checkWarmUpExists(name, single_name);
     if(exists.length !== 0) return res.status(409).json({ affectedRows: 0, message: "There is already a Warm Up with that name"})
     const result = await warmupServices.createWarmUp(name);
     return res.status(200).json({ id_warmup: result.insertId, affectedRows: result.affectedRows });
@@ -40,17 +43,16 @@ router.get('/warmup/show', async function (req, res, next) {
 
 router.get('/warmup/showByClass', async function (req, res, next) {
   try {
-    const { id_class } = req.query;
-    if (id_class != null) {
-      const result = await warmupServices.showAllWarmUpsByClass(id_class);
+    if (req.body != null) {
+      const result = await warmupServices.showAllWarmUpsByClasses(req.body);
       return res.status(200).json(result);
     } else return res.status(409).json({ message: "You need to provide a class id"})
-    
   } catch (err) {
-    console.error(`Error while showing those warm ups:`, err.message);
+    console.error(`Error while showing those physical preparations:`, err.message);
     next(err);
   }
 })
+
 
 
 

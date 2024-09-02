@@ -34,8 +34,46 @@ function communityMapper(establishments) {
 
 };
 
+function mapUserAthletes(athletes) {
+    let athletesList = [];
+    let groupByUser = [];
+    
+    athletes.forEach(athlete => {
+        if (!groupByUser.find(user => user.id === athlete.client_id)) {
+            groupByUser.push({
+                id: athlete.client_id,
+                mail: athlete.client_mail,
+                name: athlete.client_name,
+                lastname: athlete.client_lastname,
+                birthdate: athlete.client_birthdate,
+                contact: athlete.client_contact,
+                athletes: []
+            });
+        }
+    });
+
+    groupByUser.forEach(user => {
+        athletes.forEach(athlete => {
+            if (user.id === athlete.client_id) {
+                user.athletes.push({
+                    id: athlete.athlete_id,
+                    name: athlete.athlete_name,
+                    lastname: athlete.athlete_lastname,
+                    birthdate: athlete.athlete_birthdate,
+                    image: athlete.athlete_image,
+                    work_line: athlete.work_line
+                });
+            }
+        });
+        athletesList.push(user);
+    });
+        
+    return groupByUser;
+}
+
 
 
 module.exports = {
-    communityMapper
+    communityMapper,
+    mapUserAthletes
 }

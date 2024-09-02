@@ -1,4 +1,5 @@
 const db = require('./db');
+const utils = require('../utils/utils');
 
 async function createGroup(name, id_difficulty_category, id_establishment) {
 	const communities = await db.query(
@@ -29,6 +30,24 @@ async function getGroupsWithAthletes(id_establishment) {
 	return groups;
 }
 
+async function getGroupsWithAthletesById(id_establishment, id_group) {
+	const groups = await db.query(
+		`select 
+			gr.id as group_id,
+			gr.name as group_name,  
+			dc.name as difficulty,
+			a.id as athlete_id,
+			CONCAT(a.name, " ", a.lastname) as athlete,
+			a.image as athlete_image
+		from gymnastics.group_has_athletes ga
+			join gymnastics.group gr on ga.id_group = gr.id
+			join gymnastics.athlete a on ga.id_athlete = a.id
+			join gymnastics.difficulty_category dc on gr.id_difficulty_category = dc.id
+		where gr.id_establishment = ${id_establishment} and gr.id_group = ${id_group}`)
+	return groups;
+}
+
+
 async function checkExistsAthleteInGroup(id_group, id_athlete) {
 	const groups = await db.query(
 		`select * from gymnastics.group_has_athletes where id_group = ${id_group} and id_athlete = ${id_athlete}`)
@@ -53,5 +72,6 @@ module.exports = {
 	insertAthleteIntoGroup,
 	getGroupsWithAthletes,
 	getGroups,
-	checkExistsAthleteInGroup
+	checkExistsAthleteInGroup,
+	getGroupsWithAthletesById
 }

@@ -48,6 +48,27 @@ async function getCommunitiesByAthleteId(id) {
     return communities;
 } 
 
+async function getAthletesByEstablishment(id_establishment) {
+    const response = await db.query(`select 	a.id as athlete_id,
+							a.name as athlete_name,
+							a.lastname as athlete_lastname,
+							a.birthdate as athlete_birthdate,
+							a.image as athlete_image,
+							w.identifier as work_line,
+							u.id as client_id,
+							u.mail as client_mail,
+							u.contact as client_contact,
+							u.name as client_name,
+							u.lastname as client_lastname,
+							u.birthdate as client_birthdate
+			from athlete_establishment ea 
+				left join athlete a on ea.id_athlete = a.id
+				left join user u on a.id_user_in_charge = u.id
+				left join workline w on a.id_workline = w.id
+			where ea.id_establishment = ${ id_establishment };`);
+    return response;
+}
+
 
 module.exports = {
     getUsers,
@@ -56,4 +77,5 @@ module.exports = {
     getImage,
     updateUser,
     getCommunitiesByAthleteId,
+    getAthletesByEstablishment
 }

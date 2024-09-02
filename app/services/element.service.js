@@ -4,13 +4,13 @@ async function getAllElements(id_apparatus) {
 	if (id_apparatus === undefined || id_apparatus === null) {
 		const communities = await db.query(
 			`select 
-				e.id, e.name, e.image, e.difficulty, a.name as apparatus from element e
+				e.id, e.name, e.image, e.difficulty, a.name as apparatus, a.id as id_apparatus, a.image as apparatus_image, a.gender as apparatus_gender from element e
 			left join apparatus a on e.id_apparatus = a.id`)
 		return communities;
 	}
     const communities = await db.query(
 		`select 
-				e.id, e.name, e.image, e.difficulty, a.name as apparatus from element e
+				e.id, e.name, e.image, e.difficulty, a.name as apparatus, a.id as id_apparatus, a.image as apparatus_image, a.gender as apparatus_gender from element e
 		left join apparatus a on e.id_apparatus = a.id
 			where e.id_apparatus = ${id_apparatus}`)
     return communities;
@@ -27,7 +27,9 @@ async function getAllElementsConnections(id_apparatus) {
 					ee.name as element_connection_name, 
 					eee.image as element_connection_image,
 					e.difficulty as difficulty,
-					a.name as apparatus 
+					a.id as id_apparatus, 
+					a.name as apparatus,
+					a.image as apparatus_image
 			from element_connection e
 			left join element ee on e.id_element_connection = ee.id
 			left join element eee on e.id_element = eee.id

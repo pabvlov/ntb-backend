@@ -1,14 +1,33 @@
 
-function mapElementComposed(elements, connections) {
-    elements.map((element) => {
-        element.connections = connections.filter((elementConnection) => elementConnection.id_element === element.id).map(elementConnection => {
-            return {
-            id: elementConnection.id_element_connection,
-            name: elementConnection.name + ' a ' + elementConnection.element_connection_name,
-            image: elementConnection.element_connection_image,
-            difficulty: elementConnection.difficulty
-            }
+function mapElementComposed(e, c) {
+
+    elements = []
+    e.forEach(element => {
+        elements.push({
+            id: element.id,
+            name: element.name,
+            video: element.video,
+            image: element.image,
+            difficulty: element.difficulty,
+            apparatus: {
+                id: element.id_apparatus,
+                name: element.apparatus,
+                image: element.apparatus_image,
+                gender: element.apparatus_gender == "M" ? "Masculino" : "Femenino"
+            },
+            connections: c.filter((ec) => ec.id_element === element.id).map(ec => {
+                return {
+                id: ec.id_element_connection,
+                name: ec.name + ' a ' + ec.element_connection_name,
+                image: ec.element_connection_image,
+                difficulty: ec.difficulty
+                }
+            })
         });
+    });
+
+    elements.map((element) => {
+        
     });
     return elements;
 }

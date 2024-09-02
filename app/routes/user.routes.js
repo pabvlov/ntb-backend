@@ -56,5 +56,20 @@ router.get('/user/communities', async function (req, res, next) {
   }
 });
 
+router.get('/user/athletes', async function (req, res, next) {
+  try {
+    const { id_establishment } = req.query;
+    const response = await user.getAthletesByEstablishment(id_establishment);
+    return res.status(200).json({
+      users: userMapper.mapUserAthletes(response)
+    }
+  );
+    
+  } catch (err) {
+    console.error(`Error while getting that auth service:`, err.message);
+    next(err);
+  }
+});
+
 
 module.exports = router;
