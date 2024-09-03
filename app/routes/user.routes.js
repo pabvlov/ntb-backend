@@ -71,5 +71,46 @@ router.get('/user/athletes', async function (req, res, next) {
   }
 });
 
+/* create athlete */
+router.post('/user/athlete/create', async function (req, res, next) {
+  try {
+    const { name, lastname, birthdate, id_user_in_charge, id_establishment, id_workline } = req.body;
+
+    const result = await user.createAthlete(name, lastname, birthdate, id_workline, id_user_in_charge);
+    const attach = await user.attachAthleteToEstablishment(result.insertId, id_establishment, 1);
+
+    return res.status(200).json({ id_athlete: result.insertId, affectedRows: result.affectedRows });
+  } catch (err) {
+    console.error(`Error while posting that athlete row:`, err.message);
+    next(err);
+  }
+});
+
+/* create user athlete inactive */
+router.post('/user/athlete/createInactive', async function (req, res, next) {
+  try {
+    const { mail, id_establishment } = req.body;
+    let result;
+
+    const u = await user.getUserByMail(mail);
+    if (u.length === 0) {
+      return res.status(404).json({  id_athlete: 0, affectedRows: 0, message: 'User not found' });
+    } else {
+      const date = new Date(u[0].birthdate);
+      result = await user.createAthlete(u[0].name, u[0].lastname, date.toLocaleDateString('es-CL', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }), null, u[0].id);
+      const attach = await user.attachAthleteToEstablishment(result.insertId, id_establishment, 0);
+    }
+
+    return res.status(200).json({ id_athlete: result.insertId, affectedRows: result.affectedRows });
+  } catch (err) {
+    console.error(`Error while posting that athlete row:`, err.message);
+    next(err);
+  }
+});
+
 
 module.exports = router;

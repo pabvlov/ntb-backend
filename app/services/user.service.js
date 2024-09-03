@@ -54,6 +54,7 @@ async function getAthletesByEstablishment(id_establishment) {
 							a.lastname as athlete_lastname,
 							a.birthdate as athlete_birthdate,
 							a.image as athlete_image,
+                            ea.active,
 							w.identifier as work_line,
 							u.id as client_id,
 							u.mail as client_mail,
@@ -69,6 +70,14 @@ async function getAthletesByEstablishment(id_establishment) {
     return response;
 }
 
+async function createAthlete(name, lastname, birthdate, id_workline, id_user_in_charge) {
+    return await db.query(`INSERT INTO athlete (name, lastname, birthdate, id_workline, id_user_in_charge, image) VALUES ('${name}', '${lastname}', STR_TO_DATE('${birthdate}', '%d-%m-%Y'), ${id_workline}, ${id_user_in_charge}, null)`)
+}
+
+async function attachAthleteToEstablishment(id_athlete, id_establishment, active) {
+    return await db.query(`INSERT INTO athlete_establishment (id_athlete, id_establishment, active) VALUES (${id_athlete}, ${id_establishment}, ${active})`)
+}
+
 
 module.exports = {
     getUsers,
@@ -77,5 +86,7 @@ module.exports = {
     getImage,
     updateUser,
     getCommunitiesByAthleteId,
-    getAthletesByEstablishment
+    getAthletesByEstablishment,
+    createAthlete,
+    attachAthleteToEstablishment
 }

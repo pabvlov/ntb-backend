@@ -55,14 +55,17 @@ function mapUserAthletes(athletes) {
     groupByUser.forEach(user => {
         athletes.forEach(athlete => {
             if (user.id === athlete.client_id) {
-                user.athletes.push({
-                    id: athlete.athlete_id,
-                    name: athlete.athlete_name,
-                    lastname: athlete.athlete_lastname,
-                    birthdate: athlete.athlete_birthdate,
-                    image: athlete.athlete_image,
-                    work_line: athlete.work_line
-                });
+                if(athlete.active == 1) {
+                    user.athletes.push({
+                        id: athlete.athlete_id,
+                        name: athlete.athlete_name,
+                        lastname: athlete.athlete_lastname,
+                        birthdate: athlete.athlete_birthdate,
+                        image: athlete.athlete_image,
+                        work_line: athlete.work_line,
+                        active: athlete.active
+                    });
+                }
             }
         });
         athletesList.push(user);

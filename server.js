@@ -14,6 +14,7 @@ const groupRouter = require("./app/routes/group.routes");
 const elementRouter = require("./app/routes/element.routes");
 const warmupRouter = require("./app/routes/warm-up.routes");
 const physicalpreparationRouter = require("./app/routes/physical-preparation.routes");
+const worklineRouter = require("./app/routes/workline.routes");
 
 app.use(express.json());
 app.use(express.static('app/images'));
@@ -42,6 +43,8 @@ app.post("/auth/regenerate", authRouter);
 app.get("/user/find", userRouter);
 app.get("/user/communities", userRouter);
 app.get("/user/athletes", userRouter);
+app.post("/user/athlete/create", userRouter);
+app.post("/user/athlete/createInactive", userRouter);
 
 /* COMMUNITY */
 
@@ -91,6 +94,10 @@ app.post("/physicalpreparation/create", physicalpreparationRouter);
 app.delete("/physicalpreparation/delete", physicalpreparationRouter);
 app.get("/physicalpreparation/show", physicalpreparationRouter);
 app.get("/physicalpreparation/showByClass", physicalpreparationRouter);
+
+/* WORKLINES */
+
+app.get("/worklines", worklineRouter);
 
 // error handler
 app.use((err, req, res, next) => {
