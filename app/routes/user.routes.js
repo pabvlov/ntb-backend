@@ -75,8 +75,12 @@ router.get('/user/athletes', async function (req, res, next) {
 router.post('/user/athlete/create', async function (req, res, next) {
   try {
     const { name, lastname, birthdate, id_user_in_charge, id_establishment, id_workline } = req.body;
-
-    const result = await user.createAthlete(name, lastname, birthdate, id_workline, id_user_in_charge);
+    const date = new Date(birthdate);
+    const result = await user.createAthlete(name, lastname, date.toLocaleDateString('es-CL', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }), id_workline, id_user_in_charge);
     const attach = await user.attachAthleteToEstablishment(result.insertId, id_establishment, 1);
 
     return res.status(200).json({ id_athlete: result.insertId, affectedRows: result.affectedRows });

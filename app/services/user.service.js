@@ -71,6 +71,7 @@ async function getAthletesByEstablishment(id_establishment) {
 }
 
 async function createAthlete(name, lastname, birthdate, id_workline, id_user_in_charge) {
+    
     return await db.query(`INSERT INTO athlete (name, lastname, birthdate, id_workline, id_user_in_charge, image) VALUES ('${name}', '${lastname}', STR_TO_DATE('${birthdate}', '%d-%m-%Y'), ${id_workline}, ${id_user_in_charge}, null)`)
 }
 
