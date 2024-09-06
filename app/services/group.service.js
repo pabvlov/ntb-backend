@@ -66,6 +66,12 @@ async function getGroups(id_establishment) {
 	return groups;
 }
 
+async function getDifficulties() {
+	const difficulties = await db.query(
+		`select * from gymnastics.difficulty_category`)
+	return difficulties;
+}
+
 
 module.exports = {
 	createGroup,
@@ -73,5 +79,6 @@ module.exports = {
 	getGroupsWithAthletes,
 	getGroups,
 	checkExistsAthleteInGroup,
-	getGroupsWithAthletesById
+	getGroupsWithAthletesById,
+	getDifficulties
 }

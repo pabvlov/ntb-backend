@@ -74,6 +74,7 @@ app.post("/group/create", groupRouter);
 app.post("/group/insertAthlete", groupRouter);
 app.get("/groups", groupRouter);
 app.get("/group/withAthletes", groupRouter);
+app.get("/group/difficulties", groupRouter);
 
 /* ELEMENT */
 

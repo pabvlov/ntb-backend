@@ -52,4 +52,14 @@ router.get('/groups', async function (req, res, next) {
   }
 });
 
+router.get('/group/difficulties', async function (req, res, next) {
+  try {
+    const difficulties = await groupService.getDifficulties();
+    return res.status(200).json(difficulties);
+  } catch (err) {
+    console.error(`Error while getting that auth service:`, err.message);
+    next(err);
+  }
+});
+
 module.exports = router;
