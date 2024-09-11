@@ -1,6 +1,46 @@
 const express = require('express');
 const router = express.Router();
 const warmupServices = require('../services/warm-up.service.js');
+const multer = require('multer');
+
+const storageEngineProfile = multer.diskStorage({
+  destination: "./app/images/warmups",
+  filename: (req, file, cb) => {
+    console.log(req);
+    
+      cb(null, `warmup-${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({
+storage: storageEngineProfile,
+limits: { fileSize: 100000000 },
+});
+
+router.post('/user/upload', upload.single("file"), (req, res) => {
+  try {
+      if (req.file) {
+        user.uploadImage(req.file.filename, req.body.rut)
+          res.json(
+              {
+                  ok: true,
+                  message: {
+                    "image": req.file.filename,
+                  }
+              }
+          );
+          
+      } else {
+          res.status(400).json({
+              ok: false,
+              message: "No file uploaded, please upload a valid one",
+          });
+      }
+  } catch (err) {
+      console.error(`Error while getting all works: `, err.message);
+      next(err);
+  }
+});
 
 router.post('/warmup/create', async function (req, res, next) {
   try {
@@ -10,7 +50,7 @@ router.post('/warmup/create', async function (req, res, next) {
     }
     const exists = await warmupServices.checkWarmUpExists(name, single_name);
     if(exists.length !== 0) return res.status(409).json({ affectedRows: 0, message: "There is already a Warm Up with that name"})
-    const result = await warmupServices.createWarmUp(name);
+    const result = await warmupServices.createWarmUp(name, single_name);
     return res.status(200).json({ id_warmup: result.insertId, affectedRows: result.affectedRows });
   } catch (err) {
     console.error(`Error while getting that auth service:`, err.message);
@@ -20,7 +60,7 @@ router.post('/warmup/create', async function (req, res, next) {
 
 router.delete('/warmup/delete', async function (req, res, next) {
   try {
-    const { id_warmup } = req.body;
+    const { id_warmup } = req.query;
     const exists = await warmupServices.checkWarmUpExistsById(id_warmup);
     if(exists.length == 0) return res.status(409).json({ affectedRows: 0, message: "There is no Warm Up with that id"})
     const result = await warmupServices.deleteWarmUp(id_warmup);

@@ -18,7 +18,11 @@ const worklineRouter = require("./app/routes/workline.routes");
 
 app.use(express.json());
 app.use(express.static('app/images'));
-
+app.use(express.static('app/images/profiles'));
+app.use(express.static('app/images/app'));
+app.use(express.static('app/images/elements'));
+app.use(express.static('app/images/warmups'));
+app.use(express.static('app/images/physicalpreparations'));
 app.use(
     express.urlencoded({
       extended: true,
@@ -81,6 +85,9 @@ app.get("/group/difficulties", groupRouter);
 app.get("/elements", elementRouter);
 app.post("/element/create", elementRouter);
 app.delete("/element/delete", elementRouter);
+app.post("/element/attach", elementRouter);
+app.delete("/element/detach", elementRouter);
+app.get("/apparatus/show", elementRouter);
 
 /* WARM UP */
 

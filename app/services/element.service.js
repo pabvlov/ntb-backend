@@ -60,9 +60,9 @@ async function createElement(name, video, image, difficulty, id_apparatus) {
 	return communities;
 }
 
-async function checkElementExists(name) {
+async function checkElementExists(name, id_apparatus) {
 	const element = await db.query(
-		`SELECT * FROM element where name = '${name}'`)
+		`SELECT * FROM element where name = '${name}' and id_apparatus = ${id_apparatus}`)
 	return element;
 }
 
@@ -72,10 +72,38 @@ async function deleteElement(id_element) {
 	return communities;	
 }
 
+async function getApparatus() {
+	const communities = await db.query(
+		`SELECT * FROM apparatus`)
+	return communities;
+}
+
+async function attachElement(id_element, id_element_connection, difficulty) {
+	const communities = await db.query(
+		`INSERT INTO element_connection (id_element, id_element_connection, difficulty) VALUES (${id_element}, ${id_element_connection}, '${difficulty}')`)
+	return communities;
+}
+
+async function checkAttachmentExists(id_element, id_element_connection) {
+	const element = await db.query(
+		`SELECT * FROM element_connection where id_element = ${id_element} and id_element_connection = ${id_element_connection}`)
+	return element;
+}
+
+async function detachElement(id_element, id_element_connection) {
+	const communities = await db.query(
+		`DELETE FROM element_connection where id_element = ${id_element} and id_element_connection = ${id_element_connection}`)
+	return communities;
+}
+
 module.exports = {
     createElement,
 	getAllElements,
 	deleteElement,
 	getAllElementsConnections,
-	checkElementExists
+	checkElementExists,
+	getApparatus,
+	attachElement,
+	checkAttachmentExists,
+	detachElement
 }
