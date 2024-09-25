@@ -17,7 +17,7 @@ async function getClasses(id_establishment) {
 async function getClassesBetweenDates(id_establishment, start_date, end_date) {
 	const classes = await db.query(
 		`SELECT id, start_date, end_date, id_establishment, id_planification, id_user_teacher, teacher_assistence, id_group FROM class where id_establishment = ${ id_establishment } and start_date >= '${ start_date }' and end_date <= '${ end_date }'`)
-	return classes;
+		return classes;
 }
 
 async function getClassesByTeacher(id_user_teacher) {
@@ -86,7 +86,7 @@ async function achievementExists(id_element, id_planning) {
 }
 
 async function showPlanningAchievements(plannings) {
-	
+		
     return await db.query(`select pa.id_planification, e.id as id_element, e.name as element_name, e.video as element_video, e.image as element_image, e.difficulty, a.name as apparatus, a.gender from planification_has_achievements pa
         join planification p on p.id = pa.id_planification
         left join element e on e.id = pa.id_element_achievement

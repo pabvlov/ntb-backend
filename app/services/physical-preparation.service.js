@@ -1,8 +1,8 @@
 const db = require('./db')
 const utils = require('../utils/utils')
 
-async function createPhysicalPreparation(name, id_element_for) {
-    return await db.query(`INSERT INTO gymnastics.physical_preparation (name, id_element_for) VALUES ('${ name }', ${ id_element_for })`)
+async function createPhysicalPreparation(name) {
+    return await db.query(`INSERT INTO gymnastics.physical_preparation (name) VALUES ('${ name }')`)
 }
 
 async function attachPhysicalPreparationToClass(id_class, id_physical_preparation, quantity, id_quantity_type) {
@@ -21,8 +21,8 @@ async function deletePhysicalPreparationAttachment(id_class, id_physical_prepara
     return await db.query(`DELETE FROM class_has_physical_preparation where id_class = ${ id_class } and id_physical_preparation = ${ id_physical_preparation }`)
 }
 
-async function checkPhysicalPreparationExists(name, id_element_for) {
-    return await db.query(`SELECT id FROM physical_preparation WHERE name = '${ name }' and id_element_for = ${ id_element_for }`)
+async function checkPhysicalPreparationExists(name) {
+    return await db.query(`SELECT id FROM physical_preparation WHERE name = '${ name }'`)
 }
 
 async function checkPhysicalPreparationExistsById(id_physical_preparation) {

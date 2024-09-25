@@ -20,23 +20,35 @@ router.post('/class/create', async function (req, res, next) {
 
 router.get('/class/show', async function (req, res, next) {
   try {
-    const { id_establishment, id_class } = req.query;
+    const { id_establishment } = req.query;
     const classes = await classService.getClasses(id_establishment);
+    if (classes.length == 0) return res.status(404).json({ message: 'There are no classes in that period' });
     let class_ids = [];
     let planning_ids = [];
 
     classes.forEach(c => {
       class_ids.push({ id: c.id });
       planning_ids.push({ id: c.id_planification});
-      });
-      
-    plannings = await classService.showPlanningAchievements(planning_ids);
-    warmups = await warmupService.showAllWarmUpsByClasses(class_ids);
-    physicalpreparations = await physicalpreparationService.showAllPhysicalPreparationsByClasses(class_ids);
-    groups = await groupService.getGroupsWithAthletes(id_establishment);    
-    
-    result = mapping.mapEntireClass( classes, plannings, warmups, physicalpreparations, groups );
+    });
 
+    warmups = [];
+    physicalpreparations = [];
+    if (class_ids.length !== 0) {
+      warmups = await warmupService.showAllWarmUpsByClasses(class_ids);
+      physicalpreparations = await physicalpreparationService.showAllPhysicalPreparationsByClasses(class_ids);
+    }
+    
+    
+    plannings = [];
+    planning_ids = planning_ids.filter(p => p.id != null);
+    if (planning_ids.length !== 0) {
+      plannings = await classService.showPlanningAchievements(planning_ids);
+    }
+
+    groups = await groupService.getGroupsWithAthletes(id_establishment); 
+
+    result = mapping.mapEntireClass( classes, plannings, warmups, physicalpreparations, groups );
+    
     return res.status(200).json(result);
   } catch (err) {
     console.error(`Error while getting that auth service:`, err.message);
@@ -48,7 +60,34 @@ router.get('/class/showBetweenDates', async function (req, res, next) {
   try {
     const { id_establishment, start_date, end_date } = req.query;
     const classes = await classService.getClassesBetweenDates(id_establishment, start_date, end_date);
-    return res.status(200).json(classes);
+    if (classes.length == 0) return res.status(404).json({ message: 'There are no classes in that period' });
+    let class_ids = [];
+    let planning_ids = [];
+
+    classes.forEach(c => {
+      class_ids.push({ id: c.id });
+      planning_ids.push({ id: c.id_planification});
+    });
+
+    warmups = [];
+    physicalpreparations = [];
+    if (class_ids.length !== 0) {
+      warmups = await warmupService.showAllWarmUpsByClasses(class_ids);
+      physicalpreparations = await physicalpreparationService.showAllPhysicalPreparationsByClasses(class_ids);
+    }
+    
+    
+    plannings = [];
+    planning_ids = planning_ids.filter(p => p.id != null);
+    if (planning_ids.length !== 0) {
+      plannings = await classService.showPlanningAchievements(planning_ids);
+    }
+
+    groups = await groupService.getGroupsWithAthletes(id_establishment);    
+    
+    result = mapping.mapEntireClass( classes, plannings, warmups, physicalpreparations, groups );
+
+    return res.status(200).json(result);
   } catch (err) {
     console.error(`Error while getting that auth service:`, err.message);
     next(err);

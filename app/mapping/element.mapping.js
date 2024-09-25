@@ -18,7 +18,7 @@ function mapElementComposed(e, c) {
             connections: c.filter((ec) => ec.id_element === element.id).map(ec => {
                 return {
                 id: ec.id_element_connection,
-                name: ec.name + ' a ' + ec.element_connection_name,
+                name: element.name + ' a ' + ec.element_connection_name,
                 image: ec.element_connection_image,
                 difficulty: ec.difficulty
                 }

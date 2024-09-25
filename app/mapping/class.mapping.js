@@ -17,6 +17,8 @@ function mapEntireClass(classes, plannings, warmups, physicalpreparations, group
             id: c.id,
             id_establishment: c.id_establishment,
             id_planification: c.id_planification,
+            start_date: c.start_date,
+            end_date: c.end_date,
             teacher: {
                 id: c.id_user_teacher,
                 assistence: Boolean(c.teacher_assistence)
