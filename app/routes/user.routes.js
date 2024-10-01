@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const user = require('../services/user.service.js');
 const userMapper = require('../mapping/user.mapping.js');
+const communityService = require('../services/community.service.js');
 const multer = require('multer');
 
 const storageEngineProfile = multer.diskStorage({
@@ -98,8 +99,11 @@ router.get('/user/athletes', async function (req, res, next) {
   try {
     const { id_establishment } = req.query;
     const response = await user.getAthletesByEstablishment(id_establishment);
+    const roles = await communityService.getRolesByEstablishment(id_establishment);
+    console.log(roles);
+    
     return res.status(200).json({
-      users: userMapper.mapUserAthletes(response)
+      users: userMapper.mapUserAthletes(response, roles)
     }
   );
     
@@ -150,6 +154,39 @@ router.post('/user/athlete/createInactive', async function (req, res, next) {
     return res.status(200).json({ id_athlete: result.insertId, affectedRows: result.affectedRows });
   } catch (err) {
     console.error(`Error while posting that athlete row:`, err.message);
+    next(err);
+  }
+});
+
+/* set role */
+router.post('/user/setRole', async function (req, res, next) {
+  try {
+    const { user_mail, id_establishment, id_role } = req.body;
+    /* check if is already admin */
+    const roles = await communityService.getRolesByEstablishment(id_establishment);
+    for (var row in roles) {
+      if (roles[row].mail_user === user_mail && (roles[row].id_role === 1 || roles[row].id_role === 2)) {
+        return res.status(409).json({ affectedRows: 0, message: "El usuario es administrador actualmente" });
+      }
+    }
+    const result = await user.setUserRole(user_mail, id_role, id_establishment);
+    
+    return res.status(200).json({ affectedRows: result.affectedRows });
+  } catch (err) {
+    console.error(`Error while setting role:`, err.message);
+    next(err);
+  }
+});
+
+/* unset role */
+router.post('/user/unsetRole', async function (req, res, next) {
+  try {
+    const { user_mail, id_establishment, id_role } = req.body;
+    
+    const result = await user.unsetUserRole(user_mail, id_role, id_establishment);
+    return res.status(200).json({ affectedRows: result.affectedRows });
+  } catch (err) {
+    console.error(`Error while unsetting role:`, err.message);
     next(err);
   }
 });

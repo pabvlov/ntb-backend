@@ -79,6 +79,14 @@ async function attachAthleteToEstablishment(id_athlete, id_establishment, active
     return await db.query(`INSERT INTO athlete_establishment (id_athlete, id_establishment, active) VALUES (${id_athlete}, ${id_establishment}, ${active})`)
 }
 
+async function setUserRole(mail_user, id_role, id_establishment) {
+    return await db.query(`INSERT INTO user_has_roles (mail_user, id_role, id_establishment) VALUES ('${mail_user}', ${id_role}, ${id_establishment})`)
+}
+
+async function unsetUserRole(mail_user, id_role, id_establishment) {
+    return await db.query(`DELETE FROM user_has_roles WHERE mail_user = '${mail_user}' AND id_role = ${id_role} AND id_establishment = ${id_establishment}`)
+}
+
 
 module.exports = {
     getUsers,
@@ -89,5 +97,7 @@ module.exports = {
     getCommunitiesByAthleteId,
     getAthletesByEstablishment,
     createAthlete,
-    attachAthleteToEstablishment
+    attachAthleteToEstablishment,
+    setUserRole,
+    unsetUserRole
 }

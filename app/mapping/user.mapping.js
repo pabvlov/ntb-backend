@@ -34,7 +34,7 @@ function communityMapper(establishments) {
 
 };
 
-function mapUserAthletes(athletes) {
+function mapUserAthletes(athletes, roles) {
     let athletesList = [];
     let groupByUser = [];
     
@@ -47,7 +47,13 @@ function mapUserAthletes(athletes) {
                 lastname: athlete.client_lastname,
                 birthdate: athlete.client_birthdate,
                 contact: athlete.client_contact,
-                athletes: []
+                athletes: [],
+                roles: roles.filter(role => role.mail_user === athlete.client_mail).map(role => {
+                    return {
+                        id: role.id_role,
+                        role: role.role,
+                    }
+                })
             });
         }
     });

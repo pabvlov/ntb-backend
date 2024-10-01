@@ -49,10 +49,13 @@ app.get("/user/communities", userRouter);
 app.get("/user/athletes", userRouter);
 app.post("/user/athlete/create", userRouter);
 app.post("/user/athlete/createInactive", userRouter);
+app.post("/user/setRole", userRouter);
+app.post("/user/unsetRole", userRouter);
 
 /* COMMUNITY */
 
 app.get("/community/info", communityRouter);
+app.get("/establishment/roles", communityRouter);
 
 /* ALL CLASSES */
 

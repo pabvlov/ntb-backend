@@ -56,9 +56,22 @@ async function getCommunityUsers(id) {
 	return users;
 }
 
+async function getRoles() {
+    return await db.query(`SELECT * FROM roles`)
+}
+
+async function getRolesByEstablishment(id_establishment) {
+    return await db.query(`SELECT ur.mail_user, ur.id_establishment, r.id as id_role, r.role, u.name, u.lastname, u.nickname FROM user_has_roles ur
+        join roles r on r.id = ur.id_role
+        join user u on u.mail = ur.mail_user
+        WHERE ur.id_establishment = ${id_establishment}`)
+}
+
 
 module.exports = {
     getBannersByCommunity,
 	getCommunityUsers,
 	getEstablishmentsByCommunity,
+	getRoles,
+	getRolesByEstablishment
 }
