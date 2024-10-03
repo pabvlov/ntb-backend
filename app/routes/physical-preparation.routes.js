@@ -39,13 +39,13 @@ router.get('/physicalpreparation/show', async function (req, res, next) {
   }
 })
 
-router.get('/physicalpreparation/showByClass', async function (req, res, next) {
+router.get('/physicalpreparation/showByPlanification', async function (req, res, next) {
   try {
     
     if (req.body != null) {
-      const result = await physicalpreparationServices.showAllPhysicalPreparationsByClasses(req.body);
+      const result = await physicalpreparationServices.showAllPhysicalPreparationsByPlannifications(req.body);
       return res.status(200).json(result);
-    } else return res.status(409).json({ message: "You need to provide a class id"})
+    } else return res.status(409).json({ message: "You need to provide a planification id"})
     
   } catch (err) {
     console.error(`Error while showing those physical preparations:`, err.message);

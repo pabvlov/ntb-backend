@@ -15,6 +15,7 @@ const elementRouter = require("./app/routes/element.routes");
 const warmupRouter = require("./app/routes/warm-up.routes");
 const physicalpreparationRouter = require("./app/routes/physical-preparation.routes");
 const worklineRouter = require("./app/routes/workline.routes");
+const planificationRouter = require("./app/routes/planification.routes");
 
 app.use(express.json());
 app.use(express.static('app/images'));
@@ -60,12 +61,9 @@ app.get("/establishment/roles", communityRouter);
 /* ALL CLASSES */
 
 app.post("/class/create", classRouter);
-app.post("/class/insertWarmUp", classRouter)
-app.post("/class/insertPhysicalPreparation", classRouter);
-app.post("/class/planning/create", classRouter);
-app.post("/class/planning/achievement", classRouter);
 app.put("/class/changeDate", classRouter);
 app.put("/class/changeTeacher", classRouter);
+app.put("/class/attachPlanification", classRouter);
 app.delete("/class/delete", classRouter);
 app.delete("/class/warmup", classRouter);
 app.delete("/class/physicalpreparation", classRouter);
@@ -73,7 +71,16 @@ app.get("/class/show", classRouter);
 app.get("/class/showBetweenDates", classRouter);
 app.get("/class/showByTeacher", classRouter);
 app.get("/class/showByGroup", classRouter);
-app.get("/class/planning/achievements", classRouter);
+
+/* PLANIFICATIONS */
+
+app.post("/planification/insertWarmUp", planificationRouter)
+app.post("/planification/insertPhysicalPreparation", planificationRouter);
+app.post("/planification/deleteWarmUp", planificationRouter)
+app.post("/planification/deletePhysicalPreparation", planificationRouter);
+app.post("/planification/create", planificationRouter);
+app.post("/planification/achievement", planificationRouter);
+app.get("/planification/achievements", planificationRouter);
 
 /* GROUP */
 
