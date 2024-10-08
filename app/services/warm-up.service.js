@@ -45,8 +45,23 @@ async function showAllWarmUpsByPlanifications(planifications) {
     return await db.query(`select p.id as id_planification, pp.name as warm_up, cpp.quantity, q.name as quantity_type, q.single_name as quantity_type_single from planification_has_warmup cpp
         join planification p on p.id = cpp.id_planification
         join warmup pp on pp.id = cpp.id_warmup
-        join quantity_type q on q.id = cpp.id_quantity_type
+        left join quantity_type q on q.id = cpp.id_quantity_type
     where p.id in (${ utils.arrayToText(planifications) });`);
+}
+
+async function attachWarmUpsToPlanification(id_planification, warmups) {
+    let query = `INSERT INTO planification_has_warmup (id_planification, id_warmup, quantity, id_quantity_type) VALUES `;
+    warmups.forEach(w => {
+        if(w.quantity == 0) w.quantity = null;
+        if(w.quantity_type == 0) w.quantity_type = null;
+        query += `(${ id_planification }, ${ w.id }, ${ w.quantity }, ${ w.quantity_type }),`
+    });
+    query = query.slice(0, -1);
+    return await db.query(query);
+}
+
+async function deleteWarmUpAttachments(id_planification) {
+    return await db.query(`DELETE FROM planification_has_warmup where id_planification = ${ id_planification }`)
 }
 
 
@@ -60,5 +75,7 @@ module.exports = {
     checkWarmUpExistsById,
     showAllWarmUps,
     showAllWarmUpsByPlanification,
-    showAllWarmUpsByPlanifications
+    showAllWarmUpsByPlanifications,
+    attachWarmUpsToPlanification,
+    deleteWarmUpAttachments
 }

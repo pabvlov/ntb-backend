@@ -100,7 +100,6 @@ router.get('/user/athletes', async function (req, res, next) {
     const { id_establishment } = req.query;
     const response = await user.getAthletesByEstablishment(id_establishment);
     const roles = await communityService.getRolesByEstablishment(id_establishment);
-    console.log(roles);
     
     return res.status(200).json({
       users: userMapper.mapUserAthletes(response, roles)

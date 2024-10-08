@@ -19,7 +19,6 @@ router.post('/auth/login', async function (req, res, next) {
       }
       // destructuring
       const userInfo = validareResponse.content[0];
-      console.log(userInfo);
       // regenerar jwt con datos nuevos
       const token = await generarJWT(userInfo)
       return res.status(202).json({
@@ -46,10 +45,8 @@ router.post('/auth/register', async function (req, res, next) {
   try {
     const { mail, nickname, name, lastname, gender, password, contact, birthdate } = req.body;
     const userExists = await auth.validateMail(mail, password)
-    console.log(userExists);
     if (!userExists) {
       await auth.createUser(mail, nickname, name, lastname, gender, birthdate, password, contact).then(async sentence => {
-        console.log(sentence)
         if( sentence ) {
           await mailing.sendMail(mail, 'Registro exitoso', 'Bienvenido a la plataforma de Pablo')
           return res.status(202).json({
@@ -119,7 +116,6 @@ router.post('/auth/regenerate', async function (req, res, next) {
     })
     try {
       const userInfo = validarJWT(token)
-      console.log(userInfo);
       const rows = await user.getUserByMail(userInfo.mail)
       if (rows.length > 0) {
         if (!rows[0]) {

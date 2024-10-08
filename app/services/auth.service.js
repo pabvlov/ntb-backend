@@ -4,13 +4,11 @@ const helper = require('../../config/helper.js');
 
 async function validateLogin(mail, password) {
     const userSalt = await db.query(`SELECT salt FROM user where mail = '${mail}'`);
-    console.log(userSalt[0].salt);
     if (userSalt[0].salt == null || userSalt[0].salt == undefined) {
         return { ok: true, message: 'El usuario no existe en nuestra base de datos' }
     } else {
         const sha256Hasher = crypto.createHmac("sha256", userSalt[0].salt)
         const hash = sha256Hasher.update(password, "utf8").digest("base64")
-        console.log(hash);
         const login = await db.query(`select *
         FROM user u
         WHERE u.mail = '${mail}' and u.password = '${hash}'`);

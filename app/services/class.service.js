@@ -1,12 +1,18 @@
 const db = require('./db');
-const utils = require('../utils/utils');
 
-async function createClass(start_date, end_date, id_establishment, id_planification, id_user_teacher, teacher_assistence, id_group) {
-    const classId = await db.query(
-		`INSERT INTO class (start_date, end_date, id_establishment, id_planification, id_user_teacher, teacher_assistence, id_group) 
-						VALUES ('${ start_date }', '${ end_date }', ${ id_establishment }, ${ id_planification }, ${ id_user_teacher }, ${ teacher_assistence }, ${ id_group })`)
-    return classId;
-} 
+async function createClass(start_date, end_date, id_establishment, id_planification, id_user_teacher, teacher_assistence, id_group, id_period, date_period_end) {
+	if (id_period == 0) {
+		const classId = await db.query(
+			`INSERT INTO class (start_date, end_date, id_establishment, id_planification, id_user_teacher, teacher_assistence, id_group) 
+							VALUES ('${start_date}', '${end_date}', ${id_establishment}, ${id_planification}, ${id_user_teacher}, ${teacher_assistence}, ${id_group})`)
+		return classId;
+	} else {
+		const classId = await db.query(
+			`INSERT INTO class (start_date, end_date, id_establishment, id_planification, id_user_teacher, teacher_assistence, id_group, id_period, date_period_end) 
+							VALUES ('${start_date}', '${end_date}', ${id_establishment}, ${id_planification}, ${id_user_teacher}, ${teacher_assistence}, ${id_group}, ${id_period}, '${date_period_end}')`)
+		return classId;
+	}
+}
 
 async function getClasses(id_establishment) {
 	const classes = await db.query(
@@ -18,11 +24,13 @@ async function getClasses(id_establishment) {
 				c.id_user_teacher, 
 				c.teacher_assistence, 
 				c.id_group,
+				c.id_period,
+				c.date_period_end,
 				u.name as teacher_name,
 				u.lastname as teacher_lastname
 			FROM class c
 			join user u on u.id = c.id_user_teacher
-			where id_establishment = ${ id_establishment }`)
+			where id_establishment = ${id_establishment}`)
 	return classes;
 }
 
@@ -36,90 +44,106 @@ async function getClassesBetweenDates(id_establishment, start_date, end_date) {
 				c.id_user_teacher, 
 				c.teacher_assistence, 
 				c.id_group,
+				c.id_period,
+				c.date_period_end,
 				u.name as teacher_name,
 				u.lastname as teacher_lastname
 			FROM class c
 			join user u on u.id = c.id_user_teacher
-			where id_establishment = ${ id_establishment } and start_date >= '${ start_date }' and end_date <= '${ end_date }'`)
-		return classes;
+			where id_establishment = ${id_establishment} and start_date >= '${start_date}' and end_date <= '${end_date}'`)
+	return classes;
+}
+// 0 = no period, 1 = daily, 2 = weekly same day
+async function getTodayClasses(id_establishment) {
+	let today = new Date().toLocaleDateString('es-CL').slice(0, 10);
+	/* format YYYY-MM-DD */
+	today = today.split('-').reverse().join('-');
+
+	const classes = await db.query(
+		`SELECT 
+			c.id, 
+			c.start_date, 
+			c.end_date, 
+			c.id_establishment, 
+			c.id_planification, 
+			c.id_user_teacher, 
+			c.teacher_assistence, 
+			c.id_group,
+			c.id_period,
+			c.date_period_end,
+			u.name as teacher_name,
+			u.lastname as teacher_lastname
+		FROM 
+			class c
+		JOIN 
+			user u ON u.id = c.id_user_teacher
+		LEFT JOIN 
+			period p ON p.id = c.id_period
+		WHERE 
+			c.id_establishment = ${id_establishment}
+			AND (
+				-- Clases que se repiten semanalmente el mismo día (id_period = 2)
+				(c.id_period = 2 AND DAYOFWEEK(STR_TO_DATE('${today}','%Y-%m-%d')) = DAYOFWEEK(c.start_date))
+				OR 
+				-- Clases específicas creadas para el día de hoy
+				(STR_TO_DATE(c.start_date,'%Y-%m-%d') = STR_TO_DATE('${today}','%Y-%m-%d'))
+				OR
+				-- Clases que se repiten todos los días
+				(c.id_period = 1)				
+    		);`
+		);
+	return classes;
 }
 
 async function getClassesByTeacher(id_user_teacher) {
 	const classes = await db.query(
-		`SELECT id, start_date, end_date, id_establishment, id_planification, id_user_teacher, teacher_assistence, id_group FROM class where id_user_teacher = ${ id_user_teacher }`)
+		`SELECT id, start_date, end_date, id_establishment, id_planification, id_user_teacher, teacher_assistence, id_group, c.id_period FROM class where id_user_teacher = ${id_user_teacher}`)
 	return classes;
 }
 
 async function getClassesByGroup(id_group) {
 	const classes = await db.query(
-		`SELECT id, start_date, end_date, id_establishment, id_planification, id_user_teacher, teacher_assistence, id_group FROM class where id_group = ${ id_group }`)
+		`SELECT id, start_date, end_date, id_establishment, id_planification, id_user_teacher, teacher_assistence, id_group FROM class where id_group = ${id_group}`)
 	return classes;
 }
 
 async function deleteClass(id_class) {
 	const classes = await db.query(
-		`DELETE FROM class where id = ${ id_class }`)
-	return classes;	
+		`DELETE FROM class where id = ${id_class}`)
+	return classes;
 }
 
 async function changeClassDate(id_class, start_date, end_date) {
 	const classes = await db.query(
-		`UPDATE class SET start_date = '${ start_date }', end_date = '${ end_date }' where id = ${ id_class }`)
+		`UPDATE class SET start_date = '${start_date}', end_date = '${end_date}' where id = ${id_class}`)
 	return classes;
 }
 
 async function changeClassTeacher(id_class, id_user_teacher) {
 	const classes = await db.query(
-		`UPDATE class SET id_user_teacher = ${ id_user_teacher } where id = ${ id_class }`)
+		`UPDATE class SET id_user_teacher = ${id_user_teacher} where id = ${id_class}`)
 	return classes;
 }
 
 async function checkClassExists(id_class) {
-	const classes = await db.query(`SELECT id FROM class where id = ${ id_class }`);
+	const classes = await db.query(`SELECT id FROM class where id = ${id_class}`);
 	return classes;
 }
 
-async function createPlanning() {
-	const planning = await db.query(
-		`INSERT INTO planification (id) VALUES (null)`);
-	return planning;
-}
-
-async function getAllPlanningAchievements(id_class) {
-	const achievements = await db.query(
-		`SELECT * FROM achievement where id_class = ${ id_class }`);
-	return achievements;
-}
-
-async function achievementExists(id_element, id_planning) {
-	const achievements = await db.query(
-		`SELECT * FROM planification_has_achievements where id_element_achievement = ${ id_element } and id_planification = ${ id_planning }`);
-	return achievements;
-}
-
-async function showPlanningAchievements(plannings) {
-	return await db.query(`select pa.id_planification, e.id as id_element, e.name as element_name, e.video as element_video, e.image as element_image, e.difficulty, a.name as apparatus, a.gender from planification_has_achievements pa
-		join planification p on p.id = pa.id_planification
-		left join element e on e.id = pa.id_element_achievement
-		left join routine r on r.id = pa.id_routine_achievement
-		join apparatus a on a.id = e.id_apparatus
-	where pa.id_planification in (${ utils.arrayToText(plannings) });`)
-}
-
-async function attachPlanification(id_class, id_planification) {
-	const update = await db.query(
-		`UPDATE class SET id_planification = ${ id_planification } where id = ${ id_class }`);
-	return update;
-}
-
-async function attachAchievementToPlanning(id_element, id_routine, id_planning, comment) {
-	const insert = await db.query(
-		`INSERT INTO planification_has_achievements (id_planification, id_element_achievement, id_routine_achievement, comment, id_period) VALUES (${ id_planning }, ${ id_element }, ${ id_routine }, '${ comment }', null)`);
-	return insert;
+async function attachPlanificationToClasses(classes, id_planification) {
+	let query = `UPDATE class SET id_planification = ${id_planification} WHERE id IN (`;
+	classes.forEach(c => {
+		query += `${c.id},`;
+	});
+	query = query.slice(0, -1);
+	query += ')';
+	const result = await db.query(query);
+	
+	return result;
 }
 
 module.exports = {
-    createClass,
+	createClass,
 	getClasses,
 	deleteClass,
 	changeClassDate,
@@ -128,10 +152,6 @@ module.exports = {
 	getClassesByTeacher,
 	getClassesByGroup,
 	checkClassExists,
-	createPlanning,
-	getAllPlanningAchievements,
-	attachAchievementToPlanning,
-	achievementExists,
-	showPlanningAchievements,
-	attachPlanification
+	getTodayClasses,
+	attachPlanificationToClasses
 }

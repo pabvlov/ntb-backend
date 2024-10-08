@@ -3,15 +3,15 @@ const router = express.Router();
 const elementService = require('../services/element.service.js');
 const elementMapper = require('../mapping/element.mapping.js');
 
-router.get('/elements', async function (req, res, next) {
+router.post('/elements', async function (req, res, next) {
   try {
-    const { id_apparatus } = req.query;
-    const elements = await elementService.getAllElements(id_apparatus);
-    const elementsConnections = await elementService.getAllElementsConnections(id_apparatus);
+    const { apparatuses } = req.body;
+    const elements = await elementService.getAllElements(apparatuses);
+    const elementsConnections = await elementService.getAllElementsConnections(apparatuses);
     if (elements.length === 0) {
       return res.status(404).json({ message: 'No elements found' });
     }
-    return res.status(200).json(elementMapper.mapElementComposed(elements, elementsConnections));
+    return res.status(200).json(elementMapper.mapElementComposed(elements, elementsConnections, apparatuses));
   } catch (err) {
     console.error(`Error while getting that auth service:`, err.message);
     next(err);

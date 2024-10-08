@@ -71,6 +71,8 @@ app.get("/class/show", classRouter);
 app.get("/class/showBetweenDates", classRouter);
 app.get("/class/showByTeacher", classRouter);
 app.get("/class/showByGroup", classRouter);
+app.get("/class/today", classRouter);
+app.put("/class/attachPlanifications", classRouter);
 
 /* PLANIFICATIONS */
 
@@ -81,6 +83,9 @@ app.post("/planification/deletePhysicalPreparation", planificationRouter);
 app.post("/planification/create", planificationRouter);
 app.post("/planification/achievement", planificationRouter);
 app.get("/planification/achievements", planificationRouter);
+app.get("/planification/show", planificationRouter);
+app.post("/planification/build", planificationRouter);
+app.delete("/planification/delete", planificationRouter);
 
 /* GROUP */
 
@@ -92,7 +97,7 @@ app.get("/group/difficulties", groupRouter);
 
 /* ELEMENT */
 
-app.get("/elements", elementRouter);
+app.post("/elements", elementRouter);
 app.post("/element/create", elementRouter);
 app.delete("/element/delete", elementRouter);
 app.post("/element/attach", elementRouter);

@@ -1,7 +1,8 @@
 const db = require('./db');
+const utils = require('../utils/utils');
 
-async function getAllElements(id_apparatus) {
-	if (id_apparatus === undefined || id_apparatus === null) {
+async function getAllElements(apparatuses) {
+	if (apparatuses === undefined || apparatuses === null) {
 		const communities = await db.query(
 			`select 
 				e.id, e.name, e.image, e.difficulty, a.name as apparatus, a.id as id_apparatus, a.image as apparatus_image, a.gender as apparatus_gender from element e
@@ -12,12 +13,12 @@ async function getAllElements(id_apparatus) {
 		`select 
 				e.id, e.name, e.image, e.difficulty, a.name as apparatus, a.id as id_apparatus, a.image as apparatus_image, a.gender as apparatus_gender from element e
 		left join apparatus a on e.id_apparatus = a.id
-			where e.id_apparatus = ${id_apparatus}`)
+			where e.id_apparatus in (${ utils.arrayToText(apparatuses) });`)
     return communities;
 } 
 
-async function getAllElementsConnections(id_apparatus) {
-	if (id_apparatus === undefined || id_apparatus === null) {
+async function getAllElementsConnections(apparatuses) {
+	if (apparatuses === undefined || apparatuses === null) {
 		const communities = await db.query(
 			`select 
 					eee.id as id_element, 
@@ -50,7 +51,7 @@ async function getAllElementsConnections(id_apparatus) {
 		left join element ee on e.id_element_connection = ee.id
 		left join element eee on e.id_element = eee.id
 		left join apparatus a on ee.id_apparatus = a.id
-		where eee.id_apparatus = ${id_apparatus}`)
+		where eee.id_apparatus in (${ utils.arrayToText(apparatuses) });`)
 	return communities;
 }
 
@@ -96,6 +97,26 @@ async function detachElement(id_element, id_element_connection) {
 	return communities;
 }
 
+async function attachElementsToPlanification(id_planification, elements) {
+	let query = `INSERT INTO planification_has_achievements (id_planification, id_element_achievement) VALUES `;
+	elements.forEach(e => {
+		query += `(${ id_planification }, ${ e }),`
+	});
+	query = query.slice(0, -1);
+	return await db.query(query);
+}
+
+async function showAllElementsByPlanifications(planifications) {
+	return await db.query(`select p.id as id_planification, e.name as element_achievement from planification_has_achievements cpp
+		join planification p on p.id = cpp.id_planification
+		join element e on e.id = cpp.id_element_achievement
+	where p.id in (${ utils.arrayToText(planifications) });`);
+}
+
+async function deleteAchievementsAttachments(id_planification) {
+	return await db.query(`DELETE FROM planification_has_achievements where id_planification = ${ id_planification }`)
+}
+
 module.exports = {
     createElement,
 	getAllElements,
@@ -105,5 +126,8 @@ module.exports = {
 	getApparatus,
 	attachElement,
 	checkAttachmentExists,
-	detachElement
+	detachElement,
+	attachElementsToPlanification,
+	showAllElementsByPlanifications,
+	deleteAchievementsAttachments
 }
