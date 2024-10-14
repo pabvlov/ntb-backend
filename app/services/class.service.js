@@ -30,7 +30,8 @@ async function getClasses(id_establishment) {
 				u.lastname as teacher_lastname
 			FROM class c
 			join user u on u.id = c.id_user_teacher
-			where id_establishment = ${id_establishment}`)
+			where id_establishment = ${id_establishment}
+			ORDER BY TIME(start_date) asc`)
 	return classes;
 }
 
@@ -90,7 +91,8 @@ async function getTodayClasses(id_establishment) {
 				OR
 				-- Clases que se repiten todos los días
 				(c.id_period = 1)				
-    		);`
+    		)
+		ORDER BY TIME(start_date) asc;`
 		);
 	return classes;
 }
