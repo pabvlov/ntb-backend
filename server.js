@@ -73,6 +73,7 @@ app.get("/class/showByTeacher", classRouter);
 app.get("/class/showByGroup", classRouter);
 app.get("/class/today", classRouter);
 app.put("/class/attachPlanifications", classRouter);
+app.post("/class/presence", classRouter);
 
 /* PLANIFICATIONS */
 

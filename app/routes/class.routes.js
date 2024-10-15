@@ -93,8 +93,10 @@ router.get('/class/today', async function (req, res, next) {
     const classes = await classService.getTodayClasses(id_establishment);
     if (classes.length == 0) return res.status(404).json({ message: 'There are no classes in that period' });
     let planning_ids = [];
+    let classes_ids = [];
 
     classes.forEach(c => {
+      classes_ids.push({ id: c.id });
       planning_ids.push({ id: c.id_planification });
     });
 
@@ -109,10 +111,13 @@ router.get('/class/today', async function (req, res, next) {
       warmups = await warmupService.showAllWarmUpsByPlanifications(planning_ids);
       physicalpreparations = await physicalpreparationService.showAllPhysicalPreparationsByPlannifications(planning_ids);
     }
+    if (classes_ids.length !== 0) {
+      presences = await classService.presences(classes_ids);
+    }
 
     groups = await groupService.getGroupsWithAthletes(id_establishment);
 
-    result = mapping.mapEntireClass(classes, elements, warmups, physicalpreparations, groups);
+    result = mapping.mapEntireClass(classes, elements, warmups, physicalpreparations, groups, presences);
 
     return res.status(200).json(result);
   } catch (err) {
@@ -194,6 +199,18 @@ router.put('/class/attachPlanifications', async function (req, res, next) {
     return res.status(200).json({ affectedRows: result.affectedRows });
   } catch (err) {
     console.error(`Error while attaching planifications to class:`, err.message);
+    next(err);
+  }
+});
+
+/* post athlete presence */
+router.post('/class/presence', async function (req, res, next) {
+  try {
+    const { id_class, athlete_ids } = req.body;
+    const result = await classService.createAthletePresence(id_class, athlete_ids);
+    return res.status(200).json({ affectedRows: result.affectedRows });
+  } catch (err) {
+    console.error(`Error while updating athlete presence:`, err.message);
     next(err);
   }
 });

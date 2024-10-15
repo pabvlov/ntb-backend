@@ -1,9 +1,11 @@
-function mapEntireClass(classes, elements, warmups, physicalpreparations, groups) {
+function mapEntireClass(classes, elements, warmups, physicalpreparations, groups, presences) {
     let allClasses = []
-
+    
     classes.forEach(c => {
         let group = null;
         let groupAthletes = [];
+        let asistenciasMap = {};
+        
         if (groups != null) {
             group = groups.filter(g => g.group_id == c.id_group)[0];
             groupAthletes = groups.filter(g => g.group_id == c.id_group).map(g => {
@@ -27,23 +29,35 @@ function mapEntireClass(classes, elements, warmups, physicalpreparations, groups
             },
             planning: c.id_planification == null ? null : {
                 id: c.id_planification,
-                elements: elements.filter(p => p.id_planification == c.id_planification)
-                    .map(p => {
-                        return {
-                            apparatus: {
+                apparatuses: (() => {
+                    const uniqueApparatusIds = new Set();
+                    return elements.filter(p => p.id_planification == c.id_planification)
+                        .filter(p => {
+                            if (uniqueApparatusIds.has(p.id_apparatus)) {
+                                return false;
+                            } else {
+                                uniqueApparatusIds.add(p.id_apparatus);
+                                return true;
+                            }
+                        })
+                        .map(p => {
+                            return {
                                 id: p.id_apparatus,
                                 name: p.apparatus,
                                 image: p.apparatus_image,
-                            },
-                            element: {
-                                id: p.id_element,
-                                name: p.element_name,
-                                video: p.element_video,
-                                image: p.element_image,
-                                difficulty: p.difficulty
+                                elements: elements.filter(e => e.id_apparatus == p.id_apparatus && e.id_planification == c.id_planification)
+                                    .map(e => {
+                                        return {
+                                            id: e.id_element,
+                                            name: e.element_name,
+                                            video: e.element_video,
+                                            image: e.element_image,
+                                            difficulty: e.difficulty
+                                        }
+                                    })
                             }
-                        }
-                    }),
+                        });
+                })(),
                 warm_ups: warmups.filter(w => w.id_planification == c.id_planification).map(w => {
                     return {
                         warm_up: w.warm_up,
@@ -66,6 +80,29 @@ function mapEntireClass(classes, elements, warmups, physicalpreparations, groups
                 athletes: groupAthletes
             } : null
         }
+
+        // Proceso de asistencias utilizando un map
+        if (presences != null) {
+            presences
+                .filter(p => p.id_class == c.id) // Filtramos por la clase actual
+                .forEach(p => {
+                    if (!asistenciasMap[p.date]) {
+                        asistenciasMap[p.date] = {
+                            date: p.date,
+                            athletes: []
+                        };
+                    }
+                    asistenciasMap[p.date].athletes.push({
+                        id_athlete: p.id_athlete,
+                        athlete: groupAthletes.filter(a => a.athlete_id == p.id_athlete)[0].athlete
+                    });
+                });
+        }
+
+        // Convertimos el map a un array
+        const asistencias = Object.values(asistenciasMap);
+        clase.presences = asistencias;
+
         allClasses.push(clase);
 
     });

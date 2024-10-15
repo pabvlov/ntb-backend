@@ -27,7 +27,7 @@ async function achievementExists(id_element, id_planning) {
 }
 
 async function showPlanningAchievements(plannings) {
-	return await db.query(`select pa.id_planification, e.id as id_element, e.name as element_name, e.video as element_video, e.image as element_image, e.difficulty, a.name as apparatus, a.gender from planification_has_achievements pa
+	return await db.query(`select pa.id_planification, e.id as id_element, e.name as element_name, e.video as element_video, e.image as element_image, e.difficulty, a.name as apparatus, a.gender, a.id as id_apparatus, a.image as apparatus_image from planification_has_achievements pa
 		join planification p on p.id = pa.id_planification
 		left join element e on e.id = pa.id_element_achievement
 		left join routine r on r.id = pa.id_routine_achievement

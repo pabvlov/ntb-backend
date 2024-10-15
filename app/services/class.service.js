@@ -97,6 +97,21 @@ async function getTodayClasses(id_establishment) {
 	return classes;
 }
 
+async function presences(classes_ids) {
+	const presence = await db.query(
+		`SELECT * FROM athlete_presence where id_class IN (${classes_ids.map(c => c.id).join(',')})`)
+	return presence;
+}
+
+async function createAthletePresence(id_class, athlete_ids) {
+	const chileDateTime = new Date().getDate() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getFullYear() 
+
+	const result = await db.query(
+		`INSERT INTO athlete_presence (id_class, id_athlete, date) VALUES ${athlete_ids.map(a => `(${id_class}, ${a.id}, CURDATE())`).join(',')}`
+	)
+	return result;
+}
+
 async function getClassesByTeacher(id_user_teacher) {
 	const classes = await db.query(
 		`SELECT id, start_date, end_date, id_establishment, id_planification, id_user_teacher, teacher_assistence, id_group, c.id_period FROM class where id_user_teacher = ${id_user_teacher}`)
@@ -155,5 +170,7 @@ module.exports = {
 	getClassesByGroup,
 	checkClassExists,
 	getTodayClasses,
-	attachPlanificationToClasses
+	attachPlanificationToClasses,
+	presences,
+	createAthletePresence
 }
