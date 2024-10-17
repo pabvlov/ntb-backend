@@ -42,9 +42,9 @@ router.get('/group/withAthletes', async function (req, res, next) {
 
 router.get('/groups', async function (req, res, next) {
   try {
-    const { id_establishment } = req.query;
-    const groups = await groupService.getGroups(id_establishment);
-    const athletes = await groupService.getGroupsWithAthletes(id_establishment);
+    const { id_community } = req.query;
+    const groups = await groupService.getGroups(id_community);
+    const athletes = await groupService.getGroupsWithAthletes(id_community);
     return res.status(200).json(groupMapper.mapAthletesIntoGroups(groups, athletes));
   } catch (err) {
     console.error(`Error while getting that auth service:`, err.message);

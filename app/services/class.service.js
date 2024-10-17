@@ -1,4 +1,5 @@
 const db = require('./db');
+const utils = require('../utils/utils')
 
 async function createClass(start_date, end_date, id_establishment, id_planification, id_user_teacher, teacher_assistence, id_group, id_period, date_period_end) {
 	if (id_period == 0) {
@@ -55,7 +56,8 @@ async function getClassesBetweenDates(id_establishment, start_date, end_date) {
 	return classes;
 }
 // 0 = no period, 1 = daily, 2 = weekly same day
-async function getTodayClasses(id_establishment) {
+async function getTodayClasses(id_community) {
+
 	let today = new Date().toLocaleDateString('es-CL').slice(0, 10);
 	/* format YYYY-MM-DD */
 	today = today.split('-').reverse().join('-');
@@ -78,10 +80,14 @@ async function getTodayClasses(id_establishment) {
 			class c
 		JOIN 
 			user u ON u.id = c.id_user_teacher
+		JOIN
+			establishment e ON e.id = c.id_establishment
+		JOIN
+			community co ON co.id = e.id_community
 		LEFT JOIN 
 			period p ON p.id = c.id_period
 		WHERE 
-			c.id_establishment = ${id_establishment}
+			co.id = ${id_community}
 			AND (
 				-- Clases que se repiten semanalmente el mismo día (id_period = 2)
 				(c.id_period = 2 AND DAYOFWEEK(STR_TO_DATE('${today}','%Y-%m-%d')) = DAYOFWEEK(c.start_date))

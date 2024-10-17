@@ -1,11 +1,12 @@
+
 function mapEntireClass(classes, elements, warmups, physicalpreparations, groups, presences) {
-    let allClasses = []
-    
+    let allClassesByEstablishment = [];
+
     classes.forEach(c => {
         let group = null;
         let groupAthletes = [];
         let asistenciasMap = {};
-        
+
         if (groups != null) {
             group = groups.filter(g => g.group_id == c.id_group)[0];
             groupAthletes = groups.filter(g => g.group_id == c.id_group).map(g => {
@@ -16,7 +17,8 @@ function mapEntireClass(classes, elements, warmups, physicalpreparations, groups
                 }
             });
         }
-        clase = {
+
+        let clase = {
             id: c.id,
             id_establishment: c.id_establishment,
             start_date: c.start_date,
@@ -94,7 +96,7 @@ function mapEntireClass(classes, elements, warmups, physicalpreparations, groups
                     }
                     asistenciasMap[p.date].athletes.push({
                         id_athlete: p.id_athlete,
-                        athlete: groupAthletes.filter(a => a.athlete_id == p.id_athlete)[0].athlete
+                        athlete: groupAthletes.filter(a => a.athlete_id == p.id_athlete)[0]?.athlete
                     });
                 });
         }
@@ -103,11 +105,23 @@ function mapEntireClass(classes, elements, warmups, physicalpreparations, groups
         const asistencias = Object.values(asistenciasMap);
         clase.presences = asistencias;
 
-        allClasses.push(clase);
+        // Agrupar por id_establishment
+        let establishment = allClassesByEstablishment.find(e => e.id_establishment == c.id_establishment);
 
+        if (!establishment) {
+            establishment = {
+                id_establishment: c.id_establishment,
+                classes: []
+            };
+            allClassesByEstablishment.push(establishment);
+        }
+
+        establishment.classes.push(clase);
     });
-    return allClasses;
+
+    return allClassesByEstablishment;
 }
+
 
 module.exports = {
     mapEntireClass

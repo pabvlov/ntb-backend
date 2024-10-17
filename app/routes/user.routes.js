@@ -97,12 +97,12 @@ router.get('/user/communities', async function (req, res, next) {
 
 router.get('/user/athletes', async function (req, res, next) {
   try {
-    const { id_establishment } = req.query;
-    const response = await user.getAthletesByEstablishment(id_establishment);
-    const roles = await communityService.getRolesByEstablishment(id_establishment);
+    const { id_community } = req.query;
+    const response = await user.getAthletesByEstablishment(id_community);
+    const roles = await communityService.getRolesByEstablishment(id_community);
     
     return res.status(200).json({
-      users: userMapper.mapUserAthletes(response, roles)
+      establishments: userMapper.mapUserAthletes(response, roles)
     }
   );
     
@@ -164,7 +164,7 @@ router.post('/user/setRole', async function (req, res, next) {
     /* check if is already admin */
     const roles = await communityService.getRolesByEstablishment(id_establishment);
     for (var row in roles) {
-      if (roles[row].mail_user === user_mail && (roles[row].id_role === 1 || roles[row].id_role === 2)) {
+      if (roles[row].mail_user === user_mail && (roles[row].id_role === 1 || roles[row].id_role === 2) && roles[row].id_establishment === id_establishment) {
         return res.status(409).json({ affectedRows: 0, message: "El usuario es administrador actualmente" });
       }
     }

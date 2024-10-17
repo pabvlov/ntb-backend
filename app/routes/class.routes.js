@@ -89,8 +89,8 @@ router.get('/class/showBetweenDates', async function (req, res, next) {
 
 router.get('/class/today', async function (req, res, next) {
   try {
-    const { id_establishment } = req.query;    
-    const classes = await classService.getTodayClasses(id_establishment);
+    const { id_community } = req.query;    
+    const classes = await classService.getTodayClasses(id_community);
     if (classes.length == 0) return res.status(404).json({ message: 'There are no classes in that period' });
     let planning_ids = [];
     let classes_ids = [];
@@ -115,7 +115,7 @@ router.get('/class/today', async function (req, res, next) {
       presences = await classService.presences(classes_ids);
     }
 
-    groups = await groupService.getGroupsWithAthletes(id_establishment);
+    groups = await groupService.getGroupsWithAthletes(id_community);
 
     result = mapping.mapEntireClass(classes, elements, warmups, physicalpreparations, groups, presences);
 

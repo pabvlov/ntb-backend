@@ -60,11 +60,13 @@ async function getRoles() {
     return await db.query(`SELECT * FROM roles`)
 }
 
-async function getRolesByEstablishment(id_establishment) {
+async function getRolesByEstablishment(id_community) {
     return await db.query(`SELECT ur.mail_user, ur.id_establishment, r.id as id_role, r.role, u.name, u.lastname, u.nickname FROM user_has_roles ur
         join roles r on r.id = ur.id_role
         join user u on u.mail = ur.mail_user
-        WHERE ur.id_establishment = ${id_establishment}`)
+		join establishment e on e.id = ur.id_establishment
+		join community co on co.id = e.id_community
+        WHERE co.id = ${id_community}`)
 }
 
 

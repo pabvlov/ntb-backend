@@ -48,8 +48,9 @@ async function getCommunitiesByAthleteId(id) {
     return communities;
 } 
 
-async function getAthletesByEstablishment(id_establishment) {
+async function getAthletesByEstablishment(id_community) {
     const response = await db.query(`select 	a.id as athlete_id,
+                            ea.id_establishment as establishment_id,
 							a.name as athlete_name,
 							a.lastname as athlete_lastname,
 							a.birthdate as athlete_birthdate,
@@ -61,12 +62,15 @@ async function getAthletesByEstablishment(id_establishment) {
 							u.contact as client_contact,
 							u.name as client_name,
 							u.lastname as client_lastname,
-							u.birthdate as client_birthdate
+							u.birthdate as client_birthdate,
+                            e.id_community
 			from athlete_establishment ea 
 				left join athlete a on ea.id_athlete = a.id
 				left join user u on a.id_user_in_charge = u.id
 				left join workline w on a.id_workline = w.id
-			where ea.id_establishment = ${ id_establishment };`);
+                join establishment e on ea.id_establishment = e.id
+                join community co on e.id_community = co.id
+			where co.id = ${ id_community };`);
     return response;
 }
 

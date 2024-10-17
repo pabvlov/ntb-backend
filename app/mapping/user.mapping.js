@@ -35,12 +35,27 @@ function communityMapper(establishments) {
 };
 
 function mapUserAthletes(athletes, roles) {
-    let athletesList = [];
-    let groupByUser = [];
-    
+    let groupedByEstablishment = [];
+
     athletes.forEach(athlete => {
-        if (!groupByUser.find(user => user.id === athlete.client_id)) {
-            groupByUser.push({
+        // Buscar si ya existe el establecimiento en el array
+        let establishment = groupedByEstablishment.find(e => e.id_establishment === athlete.establishment_id);
+
+        if (!establishment) {
+            // Si no existe, creamos una nueva entrada para el establecimiento
+            establishment = {
+                id_establishment: athlete.establishment_id,
+                user: []
+            };
+            groupedByEstablishment.push(establishment);
+        }
+
+        // Ahora trabajamos dentro de este establecimiento
+        let user = establishment.user.find(user => user.id === athlete.client_id);
+        
+        if (!user) {
+            // Si no existe el usuario en este establecimiento, lo creamos
+            user = {
                 id: athlete.client_id,
                 mail: athlete.client_mail,
                 name: athlete.client_name,
@@ -52,32 +67,28 @@ function mapUserAthletes(athletes, roles) {
                     return {
                         id: role.id_role,
                         role: role.role,
+                        id_establishment: role.id_establishment
                     }
                 })
+            };
+            establishment.user.push(user);
+        }
+
+        // Añadimos el atleta solo si está activo
+        if (athlete.active == 1) {
+            user.athletes.push({
+                id: athlete.athlete_id,
+                name: athlete.athlete_name,
+                lastname: athlete.athlete_lastname,
+                birthdate: athlete.athlete_birthdate,
+                image: athlete.athlete_image,
+                work_line: athlete.work_line,
+                active: athlete.active
             });
         }
     });
 
-    groupByUser.forEach(user => {
-        athletes.forEach(athlete => {
-            if (user.id === athlete.client_id) {
-                if(athlete.active == 1) {
-                    user.athletes.push({
-                        id: athlete.athlete_id,
-                        name: athlete.athlete_name,
-                        lastname: athlete.athlete_lastname,
-                        birthdate: athlete.athlete_birthdate,
-                        image: athlete.athlete_image,
-                        work_line: athlete.work_line,
-                        active: athlete.active
-                    });
-                }
-            }
-        });
-        athletesList.push(user);
-    });
-        
-    return groupByUser;
+    return groupedByEstablishment;
 }
 
 

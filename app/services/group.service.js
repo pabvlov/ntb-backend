@@ -13,7 +13,7 @@ async function insertAthleteIntoGroup(id_group, id_athlete) {
 	return communities;
 }
 
-async function getGroupsWithAthletes(id_establishment) {
+async function getGroupsWithAthletes(id_community) {
 	const groups = await db.query(
 		`select 
 			gr.id as group_id,
@@ -21,12 +21,15 @@ async function getGroupsWithAthletes(id_establishment) {
 			dc.name as difficulty,
 			a.id as athlete_id,
 			CONCAT(a.name, " ", a.lastname) as athlete,
-			a.image as athlete_image
+			a.image as athlete_image,
+			e.id as establishment_id
 		from gymnastics.group_has_athletes ga
 			join gymnastics.group gr on ga.id_group = gr.id
 			join gymnastics.athlete a on ga.id_athlete = a.id
 			join gymnastics.difficulty_category dc on gr.id_difficulty_category = dc.id
-		where gr.id_establishment = ${id_establishment}`)
+			join gymnastics.establishment e on gr.id_establishment = e.id
+			join gymnastics.community co on e.id_community = co.id
+		where co.id = ${id_community}`)
 	return groups;
 }
 
@@ -54,15 +57,18 @@ async function checkExistsAthleteInGroup(id_group, id_athlete) {
 	return groups;
 }
 
-async function getGroups(id_establishment) {
+async function getGroups(id_community) {
 	const groups = await db.query(
 		`select 
 			g.id, 
 			g.name, 
-			dc.name as difficulty_category 
+			dc.name as difficulty_category ,
+			e.id as establishment_id
 		from gymnastics.group g
 			join difficulty_category dc on dc.id = g.id_difficulty_category 
-		where id_establishment = ${id_establishment}`)
+			join establishment e on e.id = g.id_establishment
+			join community c on c.id = e.id_community
+		where c.id = ${id_community}`)
 	return groups;
 }
 
