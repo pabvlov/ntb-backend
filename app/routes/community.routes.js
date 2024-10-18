@@ -4,6 +4,55 @@ const communityService = require('../services/community.service.js');
 const communityMapper = require('../mapping/community.mapping.js');
 const userMapper = require('../mapping/user.mapping.js');
 const userService = require('../services/user.service.js');
+const multer = require('multer');
+
+const storageEngineProfile = multer.diskStorage({
+  destination: "./app/images/banners",
+  filename: (req, file, cb) => {
+    console.log(req);
+    
+      cb(null, `banner-ntb-${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({
+storage: storageEngineProfile,
+limits: { fileSize: 100000000 },
+});
+
+router.post('/community/banner/upload', upload.single("file"), (req, res) => {
+  try {
+      let { type, id_establishment, description, id_user } = req.body;
+      type = 1;
+      if (req.file) {
+
+        let banner = communityService.uploadBanner(id_establishment, description, type, id_user, req.file.filename);
+
+          res.json(
+              {
+                  ok: true,
+                  affectedRows: banner.affectedRows,
+              }
+          );
+
+          res.json(
+              {
+                  ok: true,
+                  image: req.file.filename
+              }
+          );
+          
+      } else {
+          res.status(400).json({
+              ok: false,
+              message: "No file uploaded, please upload a valid one",
+          });
+      }
+  } catch (err) {
+      console.error(`Error while getting all works: `, err.message);
+      next(err);
+  }
+});
 
 router.get('/community/info', async function (req, res, next) {
   try {

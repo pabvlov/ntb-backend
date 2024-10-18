@@ -20,7 +20,7 @@ limits: { fileSize: 100000000 },
 router.post('/user/upload', upload.single("file"), (req, res) => {
   try {
       if (req.file) {
-        user.uploadImage(req.file.filename, req.body.rut)
+        user.uploadImage(req.file.filename, req.body.id_warmup)
           res.json(
               {
                   ok: true,

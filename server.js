@@ -24,6 +24,7 @@ app.use(express.static('app/images/app'));
 app.use(express.static('app/images/elements'));
 app.use(express.static('app/images/warmups'));
 app.use(express.static('app/images/physicalpreparations'));
+app.use(express.static('app/images/banners'));
 app.use(
     express.urlencoded({
       extended: true,
@@ -56,6 +57,7 @@ app.post("/user/unsetRole", userRouter);
 /* COMMUNITY */
 
 app.get("/community/info", communityRouter);
+app.post("/community/banner/upload", communityRouter);
 app.get("/establishment/roles", communityRouter);
 
 /* ALL CLASSES */

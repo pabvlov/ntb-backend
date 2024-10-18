@@ -17,11 +17,13 @@ function bannerMapper(banners, athletes, establishments) {
     alreadyExists = [];
     banners.forEach(banner => {
         response.banners.push({
+            id: banner.id_content,
             url: banner.url,
             id_establishment: banner.id_establishment,
-            id_athlete: banner.id_athlete,
-            athlete_name: banner.athlete_name,
-            athlete_lastname: banner.athlete_lastname,
+            id_user: banner.id_user,
+            user_name: banner.user_name,
+            user_lastname: banner.user_lastname,
+            user_mail: banner.user_mail,
             description: banner.description,
             index: banners.indexOf(banner)+1
         });

@@ -3,20 +3,29 @@ const db = require('./db');
 async function getBannersByCommunity(id) {
     const communities = await db.query(
 		`SELECT 
+						cc.id as id_content,
 						cc.url,
 						e.id as id_establishment,
-						a.id as id_athlete,
-						a.name as athlete_name,
-						a.lastname as athlete_lastname,
+						u.id as id_user,
+						u.name as user_name,
+						u.lastname as user_lastname,
+						u.mail as user_mail,
 						cc.description
 					FROM content cc
 					INNER JOIN establishment e on cc.id_establishment = e.id
 					INNER JOIN community c on c.id = e.id_community
-					inner join athlete_establishment ae on ae.id_establishment = e.id
-					INNER JOIN athlete a on a.id = ae.id_athlete
+					INNER JOIN user u on u.id = cc.id_user
 	where c.id = ${ id } AND cc.type = 1`)
     return communities;
 } 
+
+async function uploadImage(imgName, id_content) {
+	return await db.query(`UPDATE content SET url = "${ imgName }" AND id = ${ id_content }`)
+}
+
+async function uploadBanner(id_establishment, description, type, id_user, url) {
+	return await db.query(`INSERT INTO content (id_establishment, description, type, id_user, url) VALUES (${ id_establishment }, '${ description }', ${ type }, ${ id_user }, '${ url }')`)
+}
 
 async function getEstablishmentsByCommunity(id) {
 	const establishments = await db.query(
@@ -75,5 +84,7 @@ module.exports = {
 	getCommunityUsers,
 	getEstablishmentsByCommunity,
 	getRoles,
-	getRolesByEstablishment
+	getRolesByEstablishment,
+	uploadImage,
+	uploadBanner
 }
