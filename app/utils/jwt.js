@@ -3,7 +3,8 @@ require('dotenv').config()
 
 const generarJWT = ( userInfo ) => {
     const payload = userInfo;
-
+    console.log(jwt.decode(payload));
+    
     return new Promise((resolve, reject) => {
         jwt.sign(payload, process.env.SECRET_JWT_SEED, {
             expiresIn: '23h'
@@ -17,6 +18,8 @@ const generarJWT = ( userInfo ) => {
 }
 
 const validarJWT = ( token ) => {
+    console.log(jwt.verify(token, process.env.SECRET_JWT_SEED) + "holi");
+    
     return userInfo = jwt.verify(token, process.env.SECRET_JWT_SEED)
 }
 

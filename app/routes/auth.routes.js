@@ -88,6 +88,8 @@ router.post('/auth/renew', async function (req, res, next) {
 
     try {
       const userInfo = validarJWT(token)
+      console.log(userInfo);
+      
       return res.status(201).json({
         ok: true,
         content: {

@@ -2,12 +2,10 @@ const express = require('express');
 const router = express.Router();
 const communityService = require('../services/community.service.js');
 const communityMapper = require('../mapping/community.mapping.js');
-const userMapper = require('../mapping/user.mapping.js');
-const userService = require('../services/user.service.js');
 const multer = require('multer');
 
 const storageEngineProfile = multer.diskStorage({
-  destination: "./app/images/banners",
+  destination: "app/images/banners",
   filename: (req, file, cb) => {
     console.log(req);
     
@@ -23,6 +21,9 @@ limits: { fileSize: 100000000 },
 router.post('/community/banner/upload', upload.single("file"), (req, res) => {
   try {
       let { type, id_establishment, description, id_user } = req.body;
+      console.log(req.body);
+      console.log(req.file);
+      
       type = 1;
       if (req.file) {
 
