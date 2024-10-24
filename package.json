@@ -8,12 +8,5 @@
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.9.7",
     "nodemailer": "^6.9.14"
-  },
-  "budgets": [
-    {
-      "type": "initial",
-      "maximumWarning": "10mb",
-      "maximumError": "10mb"
-    }
-  ]
+  }
 }
