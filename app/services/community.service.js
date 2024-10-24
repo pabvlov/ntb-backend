@@ -23,8 +23,12 @@ async function uploadImage(imgName, id_content) {
 	return await db.query(`UPDATE content SET url = "${ imgName }" AND id = ${ id_content }`)
 }
 
-async function uploadBanner(id_establishment, description, type, id_user, url) {
+async function uploadContent(id_establishment, description, type, id_user, url) {
 	return await db.query(`INSERT INTO content (id_establishment, description, type, id_user, url) VALUES (${ id_establishment }, '${ description }', ${ type }, ${ id_user }, '${ url }')`)
+}
+
+async function uploadContentAttachment(id_content, id_community) {
+	return await db.query(`INSERT INTO community_content (id_content, id_community) VALUES (${ id_content }, ${ id_community })`)
 }
 
 async function getEstablishmentsByCommunity(id) {
@@ -78,6 +82,16 @@ async function getRolesByEstablishment(id_community) {
         WHERE co.id = ${id_community}`)
 }
 
+async function deleteContent(id) {
+	let content = await db.query(`SELECT * FROM community_content WHERE id_content = ${id}`)
+	if (content.length === 0) {
+		return await db.query(`DELETE FROM content WHERE id = ${id}`)
+	} else {
+		await db.query(`DELETE FROM community_content WHERE id_content = ${id}`)
+		return await db.query(`DELETE FROM content WHERE id = ${id}`)
+	}
+}
+
 
 module.exports = {
     getBannersByCommunity,
@@ -86,5 +100,7 @@ module.exports = {
 	getRoles,
 	getRolesByEstablishment,
 	uploadImage,
-	uploadBanner
+	uploadContent,
+	deleteContent,
+	uploadContentAttachment
 }

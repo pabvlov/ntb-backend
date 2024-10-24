@@ -9,9 +9,12 @@ async function validateLogin(mail, password) {
     } else {
         const sha256Hasher = crypto.createHmac("sha256", userSalt[0].salt)
         const hash = sha256Hasher.update(password, "utf8").digest("base64")
-        const login = await db.query(`select *
+        const login = await db.query(`select u.id, u.mail, u.nickname, u.name, u.lastname, a.image, u.password
         FROM user u
+            JOIN athlete a ON u.id = a.id_user_in_charge and u.name = a.name and u.lastname = a.lastname
         WHERE u.mail = '${mail}' and u.password = '${hash}'`);
+        console.log(login);
+        
         if (login.length === 0) {
             return { ok: false, message: 'La contraseña es incorrecta' }
         } else return { ok: true, content: login };

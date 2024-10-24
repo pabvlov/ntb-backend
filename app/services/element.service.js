@@ -116,6 +116,18 @@ async function showAllElementsByPlanifications(planifications) {
 async function deleteAchievementsAttachments(id_planification) {
 	return await db.query(`DELETE FROM planification_has_achievements where id_planification = ${ id_planification }`)
 }
+/* changeImage(id_element, req.file.filename) */
+async function changeImage(id_element, image) {
+	const communities = await db.query(
+		`UPDATE element SET image = '${image}' where id = ${id_element}`)
+	return communities;
+}
+
+async function changeVideo(id_element, video) {
+	const communities = await db.query(
+		`UPDATE element SET video = '${video}' where id = ${id_element}`)
+	return communities;
+}
 
 module.exports = {
     createElement,
@@ -129,5 +141,7 @@ module.exports = {
 	detachElement,
 	attachElementsToPlanification,
 	showAllElementsByPlanifications,
-	deleteAchievementsAttachments
+	deleteAchievementsAttachments,
+	changeImage,
+	changeVideo
 }

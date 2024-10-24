@@ -16,15 +16,19 @@ const warmupRouter = require("./app/routes/warm-up.routes");
 const physicalpreparationRouter = require("./app/routes/physical-preparation.routes");
 const worklineRouter = require("./app/routes/workline.routes");
 const planificationRouter = require("./app/routes/planification.routes");
+const path = require('path');
 
 app.use(express.json());
-app.use(express.static('app/images'));
-app.use(express.static('app/images/profiles'));
-app.use(express.static('app/images/app'));
-app.use(express.static('app/images/elements'));
-app.use(express.static('app/images/warmups'));
-app.use(express.static('app/images/physicalpreparations'));
-app.use(express.static('app/images/banners'));
+
+// Definir rutas estáticas con prefijos específicos
+app.use('/images', express.static(path.join(__dirname, 'app/images')));
+app.use('/profiles', express.static(path.join(__dirname, 'app/images/profiles')));
+app.use('/app', express.static(path.join(__dirname, 'app/images/app')));
+app.use('/elements', express.static(path.join(__dirname, 'app/images/elements')));
+app.use('/warmups', express.static(path.join(__dirname, 'app/images/warmups')));
+app.use('/physicalpreparations', express.static(path.join(__dirname, 'app/images/physicalpreparations')));
+app.use('/banners', express.static(path.join(__dirname, 'app/images/banners')));
+
 app.use(
     express.urlencoded({
       extended: true,
@@ -58,6 +62,9 @@ app.post("/user/unsetRole", userRouter);
 
 app.get("/community/info", communityRouter);
 app.post("/community/banner/upload", communityRouter);
+app.post("/community/comment/upload", communityRouter);
+app.delete("/community/comment/delete", communityRouter);
+app.delete("/community/banner/delete", communityRouter);
 app.get("/establishment/roles", communityRouter);
 
 /* ALL CLASSES */
@@ -105,6 +112,7 @@ app.post("/element/create", elementRouter);
 app.delete("/element/delete", elementRouter);
 app.post("/element/attach", elementRouter);
 app.delete("/element/detach", elementRouter);
+app.post("/element/image/upload", elementRouter);
 app.get("/apparatus/show", elementRouter);
 
 /* WARM UP */
