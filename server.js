@@ -28,6 +28,7 @@ app.use('/elements', express.static(path.join(__dirname, 'app/images/elements'))
 app.use('/warmups', express.static(path.join(__dirname, 'app/images/warmups')));
 app.use('/physicalpreparations', express.static(path.join(__dirname, 'app/images/physicalpreparations')));
 app.use('/banners', express.static(path.join(__dirname, 'app/images/banners')));
+app.use('/content', express.static(path.join(__dirname, 'app/images/content')));
 
 app.use(
     express.urlencoded({

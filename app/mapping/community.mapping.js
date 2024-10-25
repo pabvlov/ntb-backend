@@ -1,5 +1,5 @@
 
-function bannerMapper(banners, athletes, establishments) {
+function bannerMapper(banners, athletes, establishments, comments) {
     response = {
         banners: [],
         community: {
@@ -11,7 +11,8 @@ function bannerMapper(banners, athletes, establishments) {
             facebook: establishments[0].facebook,
             description: establishments[0].description,
         },
-        establishments: mapEstablishments(establishments, athletes)
+        establishments: mapEstablishments(establishments, athletes),
+        content: mapComments(comments)
     }
 
     alreadyExists = [];
@@ -51,6 +52,23 @@ function mapEstablishments(establishments, athletes) {
     return response;
 }
 
+function mapComments(comments) {
+    response = []
+    comments.forEach(comment => {
+        response.push({
+            id: comment.id_content,
+            url: comment.url,
+            id_user: comment.id_user,
+            user_name: comment.user_name,
+            user_lastname: comment.user_lastname,
+            user_mail: comment.user_mail,
+            description: comment.description,
+            date: comment.date
+        });
+    });
+    return response;
+}
+
 module.exports = {
-    bannerMapper
+    bannerMapper,
 }

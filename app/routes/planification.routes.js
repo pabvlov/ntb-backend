@@ -171,6 +171,7 @@ router.delete('/planification/delete', async function (req, res, next) {
     const deleteWarmUps = await warmupService.deleteWarmUpAttachments(id_planification);
     const deletePhysicalPreparations = await physicalpreparationService.deletePhysicalPreparationAttachments(id_planification);
     const deleteElements = await elementService.deleteAchievementsAttachments(id_planification);
+    const classesAffected = await planificationService.deletePlanificationFromClass(id_planification);
     const result = await planificationService.deletePlanification(id_planification);
     return res.status(200).json({ affectedRows: result.affectedRows });
   } catch (err) {

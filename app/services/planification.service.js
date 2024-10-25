@@ -66,6 +66,12 @@ async function deletePlanification(id_planification) {
 	return deletePlanification;
 }
 
+async function deletePlanificationFromClass(id_planification) {
+	const deletePlanification = await db.query(
+		`UPDATE class SET id_planification = null where id_planification = ${ id_planification }`);
+	return deletePlanification;
+}
+
 module.exports = {
     createPlanning,
     getAllPlanningAchievements,
@@ -75,5 +81,6 @@ module.exports = {
     attachAchievementToPlanning,
     showPlanification,
 	checkPlanificationExists,
-	deletePlanification
+	deletePlanification,
+	deletePlanificationFromClass
 }

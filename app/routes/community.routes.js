@@ -6,7 +6,7 @@ const multer = require('multer');
 const path = require('path');
 
 // Usar path para resolver rutas correctamente
-const storageEngineProfile = multer.diskStorage({
+const storageEngineProfileBanner = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, '../../app/images/banners')); // Ajustamos la ruta con path
   },
@@ -15,12 +15,26 @@ const storageEngineProfile = multer.diskStorage({
   },
 });
 
-const upload = multer({
-  storage: storageEngineProfile,
+const storageEngineProfileContent = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '../../app/images/content')); // Ajustamos la ruta con path
+  },
+  filename: (req, file, cb) => {
+    cb(null, `content-ntb-${Date.now()}-${file.originalname}`);
+  },
+});
+
+const uploadBanner = multer({
+  storage: storageEngineProfileBanner,
   limits: { fileSize: 100000000 }, // Límite de 100MB
 });
 
-router.post('/community/banner/upload', upload.single("file"), (req, res, next) => {
+const uploadContent = multer({
+  storage: storageEngineProfileContent,
+  limits: { fileSize: 100000000 }, // Límite de 100MB
+});
+
+router.post('/community/banner/upload', uploadBanner.single("file"), (req, res, next) => {
   try {
     let { type, id_establishment, description, id_user } = req.body;
     type = 1;
@@ -43,17 +57,24 @@ router.post('/community/banner/upload', upload.single("file"), (req, res, next) 
   }
 });
 
-router.post('/community/comment/upload', upload.single("file"), (req, res, next) => {
+router.post('/community/comment/upload', uploadContent.single("file"), async (req, res, next) => {
   try {
-    let { id_establishment, comment, id_user } = req.body;
+    let { comment, id_user, id_community } = req.body;
     type = 2;
     if (req.file) {
-      let banner = communityService.uploadContent(id_establishment, comment, type, id_user, req.file.filename);
-      let attachment = communityService.uploadContentAttachment(banner.insertId, req.file.filename);
-      res.json({
-        affectedRows: banner.affectedRows + attachment.affectedRows,
-        image: req.file.filename
-      });
+      let banner = await communityService.uploadContent(null, comment, type, id_user, req.file.filename);
+      let attachment = await communityService.uploadContentAttachment(banner.insertId, id_community);
+      if (banner.affectedRows === 0 || attachment.affectedRows === 0) {
+        res.status(400).json({
+          affectedRows: banner.affectedRows + attachment.affectedRows,
+          message: "Error while uploading comment: " + banner.message,
+        });
+      } else {
+        res.json({
+          affectedRows: banner.affectedRows + attachment.affectedRows,
+          image: req.file.filename
+        });
+      }
     } else {
       res.status(400).json({
         affectedRows: banner.affectedRows,
@@ -100,8 +121,9 @@ router.get('/community/info', async function (req, res, next) {
     const banners = await communityService.getBannersByCommunity(id);
     const athletes = await communityService.getCommunityUsers(id);
     const establishments = await communityService.getEstablishmentsByCommunity(id);
+    const comments = await communityService.getCommentsByCommunity(id);
     
-    const response = communityMapper.bannerMapper(banners, athletes, establishments);
+    const response = communityMapper.bannerMapper(banners, athletes, establishments, comments);
 
     return res.status(200).json(response);
   } catch (err) {

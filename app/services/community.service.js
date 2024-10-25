@@ -24,11 +24,31 @@ async function uploadImage(imgName, id_content) {
 }
 
 async function uploadContent(id_establishment, description, type, id_user, url) {
-	return await db.query(`INSERT INTO content (id_establishment, description, type, id_user, url) VALUES (${ id_establishment }, '${ description }', ${ type }, ${ id_user }, '${ url }')`)
+	/* Chile's Date */
+	const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+	return await db.query(`INSERT INTO content (id_establishment, description, type, id_user, url, date) VALUES (${ id_establishment }, '${ description }', ${ type }, ${ id_user }, '${ url }', '${ date }')`)
 }
 
 async function uploadContentAttachment(id_content, id_community) {
 	return await db.query(`INSERT INTO community_content (id_content, id_community) VALUES (${ id_content }, ${ id_community })`)
+}
+
+async function getCommentsByCommunity(id) {
+	const comments = await db.query(
+		`SELECT 
+				cc.id as id_content,
+				cc.url,
+				u.id as id_user,
+				u.name as user_name,
+				u.lastname as user_lastname,
+				u.mail as user_mail,
+				cc.description,
+				cc.date
+			FROM content cc
+			INNER JOIN user u on u.id = cc.id_user
+			INNER JOIN community_content ccc on ccc.id_content = cc.id
+		WHERE ccc.id_community = ${ id } AND cc.type = 2`)
+	return comments;
 }
 
 async function getEstablishmentsByCommunity(id) {
@@ -102,5 +122,6 @@ module.exports = {
 	uploadImage,
 	uploadContent,
 	deleteContent,
-	uploadContentAttachment
+	uploadContentAttachment,
+	getCommentsByCommunity
 }
