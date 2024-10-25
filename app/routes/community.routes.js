@@ -25,7 +25,7 @@ router.post('/community/banner/upload', upload.single("file"), (req, res, next) 
     let { type, id_establishment, description, id_user } = req.body;
     type = 1;
     if (req.file) {
-      let banner = communityService.uploadBanner(id_establishment, description, type, id_user, req.file.filename);
+      let banner = communityService.uploadContent(id_establishment, description, type, id_user, req.file.filename);
 
       res.json({
         affectedRows: banner.affectedRows,
@@ -66,9 +66,9 @@ router.post('/community/comment/upload', upload.single("file"), (req, res, next)
   }
 });
 
-router.delete('/community/comment/delete', upload.single("file"), (req, res, next) => {
+router.delete('/community/comment/delete', (req, res, next) => {
   try {
-    let { id } = req.body;
+    let { id } = req.query;
     let banner = communityService.deleteContent(id);
 
     res.json({
@@ -80,9 +80,9 @@ router.delete('/community/comment/delete', upload.single("file"), (req, res, nex
   }
 });
 
-router.delete('/community/banner/delete', upload.single("file"), (req, res, next) => {
+router.delete('/community/banner/delete', (req, res, next) => {
   try {
-    let { id } = req.body;
+    let { id } = req.query;
     let banner = communityService.deleteContent(id);
 
     res.json({
