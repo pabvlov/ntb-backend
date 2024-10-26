@@ -66,6 +66,7 @@ app.post("/community/banner/upload", communityRouter);
 app.post("/community/comment/upload", communityRouter);
 app.delete("/community/comment/delete", communityRouter);
 app.delete("/community/banner/delete", communityRouter);
+app.put("/community/logo/upload", communityRouter);
 app.get("/establishment/roles", communityRouter);
 
 /* ALL CLASSES */

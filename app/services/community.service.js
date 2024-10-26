@@ -112,6 +112,9 @@ async function deleteContent(id) {
 	}
 }
 
+async function uploadLogo(id_community, filename) {
+	return await db.query(`UPDATE community SET logo = "${ filename }" WHERE id = ${ id_community }`)
+}
 
 module.exports = {
     getBannersByCommunity,
@@ -123,5 +126,6 @@ module.exports = {
 	uploadContent,
 	deleteContent,
 	uploadContentAttachment,
-	getCommentsByCommunity
+	getCommentsByCommunity,
+	uploadLogo
 }

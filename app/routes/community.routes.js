@@ -24,6 +24,15 @@ const storageEngineProfileContent = multer.diskStorage({
   },
 });
 
+const storageEngineProfileProfile = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, '../../app/images/profiles')); // Ajustamos la ruta con path
+  },
+  filename: (req, file, cb) => {
+    cb(null, `profile-ntb-${Date.now()}-${file.originalname}`);
+  },
+});
+
 const uploadBanner = multer({
   storage: storageEngineProfileBanner,
   limits: { fileSize: 100000000 }, // Límite de 100MB
@@ -32,6 +41,40 @@ const uploadBanner = multer({
 const uploadContent = multer({
   storage: storageEngineProfileContent,
   limits: { fileSize: 100000000 }, // Límite de 100MB
+});
+
+const uploadProfile = multer({
+  storage: storageEngineProfileProfile,
+  limits: { fileSize: 100000000 }, // Límite de 100MB
+});
+
+router.put('/community/logo/upload', uploadProfile.single("file"), (req, res, next) => {
+  try {
+    let { id_community } = req.body;
+    if (req.file) {
+      /* check if its an image */
+      if (!req.file.mimetype.includes('image')) {
+        return res.status(400).json({
+          affectedRows: 0,
+          message: "Invalid file format, please upload a valid image",
+        });
+      }
+      let logo = communityService.uploadLogo(id_community, req.file.filename);
+
+      res.json({
+        affectedRows: logo.affectedRows,
+        image: req.file.filename
+      });
+    } else {
+      res.status(400).json({
+        affectedRows: 0,
+        message: "No file uploaded, please upload a valid one",
+      });
+    }
+  } catch (err) {
+    console.error(`Error while uploading logo: `, err.message);
+    next(err);
+  }
 });
 
 router.post('/community/banner/upload', uploadBanner.single("file"), (req, res, next) => {
