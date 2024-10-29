@@ -116,6 +116,14 @@ async function uploadLogo(id_community, filename) {
 	return await db.query(`UPDATE community SET logo = "${ filename }" WHERE id = ${ id_community }`)
 }
 
+async function updateCommunity(id_community, social_reason, acronym, contact, facebook, instagram) {
+	return await db.query(`UPDATE community SET razon_social = "${ social_reason }", acronym = "${ acronym }", contact = ${ contact }, facebook = "${ facebook }", instagram = "${ instagram }" WHERE id = ${ id_community }`)
+}
+
+async function updateEstablishment(id_establishment, name, address, capacity) {
+	return await db.query(`UPDATE establishment SET name = "${ name }", address = "${ address }", capacity = ${ capacity } WHERE id = ${ id_establishment }`)
+}
+
 module.exports = {
     getBannersByCommunity,
 	getCommunityUsers,
@@ -127,5 +135,7 @@ module.exports = {
 	deleteContent,
 	uploadContentAttachment,
 	getCommentsByCommunity,
-	uploadLogo
+	uploadLogo,
+	updateCommunity,
+	updateEstablishment
 }

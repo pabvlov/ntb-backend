@@ -187,6 +187,41 @@ router.get('/establishment/roles', async function (req, res, next) {
   }
 });
 
+router.put('/community/update', async function (req, res, next) {
+  try {
+    const { id_community, social_reason, acronym, contact, facebook, instagram } = req.body;
+    const community = await communityService.updateCommunity(id_community, social_reason, acronym, contact, facebook, instagram);
+
+    return res.status(200).json({
+      affectedRows: community.affectedRows,
+    });
+  } catch (err) {
+    console.error(`Error while getting that auth service:`, err.message);
+    next(err);
+    return res.status(500).json({
+      message: err.message,
+    });
+    
+  }
+});
+
+router.put('/community/establishment/update', async function (req, res, next) {
+  try {
+    const { id_establishment, name, address, capacity } = req.body;
+    const gym = await communityService.updateEstablishment(id_establishment, name, address, capacity);
+
+    return res.status(200).json({
+      affectedRows: gym.affectedRows,
+    });
+  } catch (err) {
+    console.error(`Error while getting that auth service:`, err.message);
+    next(err);
+    return res.status(500).json({
+      message: err.message,
+    });
+    
+  }
+});
 
 
 module.exports = router;
